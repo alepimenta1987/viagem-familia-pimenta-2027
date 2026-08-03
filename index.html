@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Férias Família Pimenta - Janeiro 2027</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            padding-top: 80px;
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, #1e90ff 0%, #00bcd4 100%);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(30, 144, 255, 0.3);
+            z-index: 1000;
+        }
+
+        .header h1 {
+            font-size: 1.4em;
+            margin: 0;
+            font-weight: bold;
+        }
+
+        .header p {
+            font-size: 0.75em;
+            margin: 3px 0 0 0;
+            opacity: 0.95;
+        }
+
+        .tabs {
+            position: fixed;
+            top: 65px;
+            left: 0;
+            right: 0;
+            background: white;
+            border-bottom: 2px solid #e0e0e0;
+            display: flex;
+            overflow-x: auto;
+            z-index: 999;
+            padding: 0;
+        }
+
+        .tab-btn {
+            flex: 1;
+            min-width: 70px;
+            padding: 12px;
+            border: none;
+            background: white;
+            cursor: pointer;
+            font-size: 0.85em;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            white-space: nowrap;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .tab-btn i {
+            font-size: 1.3em;
+        }
+
+        .tab-btn.active {
+            color: #1e90ff;
+            border-bottom-color: #1e90ff;
+            background: #f0f8ff;
+        }
+
+        .tab-btn:hover {
+            background: #f9f9f9;
+        }
+
+        .container {
+            max-width: 100%;
+            padding: 15px;
+            margin-bottom: 20px;
+            padding-top: 15px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-left: 5px solid #1e90ff;
+        }
+
+        .card-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #1e90ff;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title i {
+            font-size: 1.5em;
+        }
+
+        .big-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-top: 5px solid #1e90ff;
+        }
+
+        .big-card-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .big-card-subtitle {
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .big-card-content {
+            font-size: 0.95em;
+            line-height: 1.5;
+            color: #555;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .info-box {
+            background: #f9f9f9;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 3px solid #00bcd4;
+        }
+
+        .info-box-label {
+            font-size: 0.8em;
+            color: #999;
+            margin-bottom: 5px;
+        }
+
+        .info-box-value {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #1e90ff;
+        }
+
+        .cost-family {
+            background: white;
+            padding: 15px;
+            margin-bottom: 12px;
+            border-radius: 10px;
+            border-left: 4px solid #ff6b6b;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .cost-family:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+
+        .cost-family-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .cost-family-name {
+            font-size: 1.05em;
+        }
+
+        .cost-family-amount {
+            font-size: 1.1em;
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+
+        .cost-family-details {
+            display: none;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .cost-family.active .cost-family-details {
+            display: block;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.95em;
+        }
+
+        .detail-label {
+            color: #666;
+        }
+
+        .detail-value {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .gallery {
+            margin-top: 15px;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .gallery-item {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            height: 150px;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .gallery-item:active img {
+            transform: scale(0.95);
+        }
+
+        .gallery-label {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 8px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.95);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-content {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-img {
+            max-width: 100%;
+            max-height: 80%;
+            object-fit: contain;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5em;
+            color: #333;
+        }
+
+        .alert {
+            background: #fff3cd;
+            border-left: 4px solid #ff9800;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.95em;
+        }
+
+        .alert-title {
+            font-weight: bold;
+            color: #ff6b00;
+            margin-bottom: 8px;
+        }
+
+        .member {
+            background: #f9f9f9;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 3px solid #00bcd4;
+        }
+
+        .member-name {
+            font-weight: bold;
+            font-size: 1em;
+            margin-bottom: 5px;
+        }
+
+        .member-age {
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        .activity-card {
+            background: white;
+            padding: 15px;
+            margin-bottom: 12px;
+            border-radius: 10px;
+            border-top: 3px solid #2ecc71;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+
+        .activity-icon {
+            font-size: 1.8em;
+            margin-bottom: 10px;
+        }
+
+        .activity-name {
+            font-weight: bold;
+            font-size: 1.05em;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .activity-desc {
+            font-size: 0.85em;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px;
+            background: white;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            border-left: 3px solid #2ecc71;
+        }
+
+        .checklist-item input {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+        }
+
+        .checklist-label {
+            flex: 1;
+            font-size: 0.95em;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .checklist-item input:checked + .checklist-label {
+            opacity: 0.6;
+            text-decoration: line-through;
+        }
+
+        .button {
+            background: #1e90ff;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1em;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 10px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .button:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 8px rgba(30, 144, 255, 0.3);
+        }
+
+        .apartments-info {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .apt-feature {
+            background: #f0f8ff;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid #1e90ff;
+            font-size: 0.95em;
+        }
+
+        .apt-feature-title {
+            font-weight: bold;
+            color: #1e90ff;
+            margin-bottom: 8px;
+        }
+
+        .apt-feature-text {
+            color: #555;
+            line-height: 1.5;
+        }
+
+        .timeline-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 12px;
+            border-radius: 10px;
+            border-left: 4px solid #1e90ff;
+        }
+
+        .timeline-day {
+            font-size: 0.8em;
+            color: #999;
+            margin-bottom: 5px;
+        }
+
+        .timeline-title {
+            font-weight: bold;
+            font-size: 1.05em;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .timeline-event {
+            font-size: 0.9em;
+            color: #555;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .timeline-event:last-child {
+            border-bottom: none;
+        }
+
+        .emoji {
+            margin-right: 5px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #999;
+            font-size: 0.85em;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏖️ FÉRIAS PIMENTA</h1>
+        <p>09-17 Janeiro | Itapema - SC</p>
+    </div>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="showTab('cronograma')">
+            <i class="fas fa-calendar"></i>
+            <span>Cronograma</span>
+        </button>
+        <button class="tab-btn" onclick="showTab('apartamento')">
+            <i class="fas fa-building"></i>
+            <span>Apartamento</span>
+        </button>
+        <button class="tab-btn" onclick="showTab('custos')">
+            <i class="fas fa-dollar-sign"></i>
+            <span>Custos</span>
+        </button>
+        <button class="tab-btn" onclick="showTab('pessoas')">
+            <i class="fas fa-users"></i>
+            <span>Pessoas</span>
+        </button>
+        <button class="tab-btn" onclick="showTab('atividades')">
+            <i class="fas fa-utensils"></i>
+            <span>Atividades</span>
+        </button>
+        <button class="tab-btn" onclick="showTab('checklist')">
+            <i class="fas fa-check-square"></i>
+            <span>Lista</span>
+        </button>
+    </div>
+
+    <div class="container">
+        <!-- CRONOGRAMA -->
+        <div id="cronograma" class="tab-content active">
+            <div class="alert">
+                <div class="alert-title">⚠️ CONFIRMAÇÃO PENDENTE</div>
+                <div>Leandro precisa confirmar férias no período de 08-18 de Janeiro.</div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-day">Sexta, 08.01.2027</div>
+                <div class="timeline-title">Saída de Sarandi</div>
+                <div class="timeline-event"><span class="emoji">⏰</span> Saída: 04:00</div>
+                <div class="timeline-event"><span class="emoji">🚗</span> Sarandi → Outlet Curitiba</div>
+                <div class="timeline-event"><span class="emoji">🏪</span> Outlet: 10:00</div>
+                <div class="timeline-event"><span class="emoji">🏠</span> Casa Leandro: 19:00</div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-day">Sábado, 09.01.2027</div>
+                <div class="timeline-title">Saída para Itapema</div>
+                <div class="timeline-event"><span class="emoji">🚗</span> Curitiba → Itapema</div>
+                <div class="timeline-event"><span class="emoji">🍽️</span> Almoço em SC (local a definir)</div>
+                <div class="timeline-event"><span class="emoji">⏰</span> Check-in: 15:00</div>
+                <div class="timeline-event"><span class="emoji">🏨</span> Chegada ao Apartamento</div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-day">Domingo-Sábado</div>
+                <div class="timeline-title">10 a 16 de Janeiro</div>
+                <div class="timeline-event"><span class="emoji">☀️</span> Dias de praia!</div>
+                <div class="timeline-event"><span class="emoji">🏊</span> Piscina & Diversão</div>
+                <div class="timeline-event"><span class="emoji">🎉</span> Momentos em família</div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-day">Domingo, 17.01.2027</div>
+                <div class="timeline-title">Volta para Casa</div>
+                <div class="timeline-event"><span class="emoji">⏰</span> Check-out: 11:00</div>
+                <div class="timeline-event"><span class="emoji">🍽️</span> Almoço em Curitiba (local a definir)</div>
+                <div class="timeline-event"><span class="emoji">🏠</span> Casa do Leandro</div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-day">Segunda, 18.01.2027</div>
+                <div class="timeline-title">Retorno para Sarandi</div>
+                <div class="timeline-event"><span class="emoji">⏰</span> Saída: 04:00</div>
+                <div class="timeline-event"><span class="emoji">🚗</span> Leandro → Sarandi</div>
+            </div>
+        </div>
+
+        <!-- APARTAMENTO -->
+        <div id="apartamento" class="tab-content">
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-map-marker"></i>
+                    Localização
+                </div>
+                <div class="apt-feature">
+                    <div class="apt-feature-title">📍 Onde Fica</div>
+                    <div class="apt-feature-text">
+                        <strong>Meia Praia, Itapema - SC</strong><br>
+                        Av. Nereu Ramos, 3977<br>
+                        Próximo ao Russi & Russi
+                    </div>
+                </div>
+                <div class="apt-feature">
+                    <div class="apt-feature-title">🏖️ Distância da Praia</div>
+                    <div class="apt-feature-text">
+                        <strong>Apenas 5 minutos caminhando!</strong>
+                    </div>
+                </div>
+                <div class="apt-feature">
+                    <div class="apt-feature-title">🏪 Proximidades</div>
+                    <div class="apt-feature-text">
+                        📦 Mercado: 60m<br>
+                        💊 Farmácia: 100m<br>
+                        🛍️ Shopping: perto
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-door-open"></i>
+                    Check-in / Check-out
+                </div>
+                <div class="info-grid">
+                    <div class="info-box">
+                        <div class="info-box-label">CHECK-IN</div>
+                        <div class="info-box-value">15:00</div>
+                    </div>
+                    <div class="info-box">
+                        <div class="info-box-label">CHECK-OUT</div>
+                        <div class="info-box-value">11:00</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-bed"></i>
+                    Acomodação
+                </div>
+                <div class="apartments-info">
+                    <div class="apt-feature">
+                        <div class="apt-feature-title">🛏️ Quartos</div>
+                        <div class="apt-feature-text">3 Suítes completas</div>
+                    </div>
+                    <div class="apt-feature">
+                        <div class="apt-feature-title">🛏️ Camas</div>
+                        <div class="apt-feature-text">4 camas (1 casal + 3 solteiros)</div>
+                    </div>
+                    <div class="apt-feature">
+                        <div class="apt-feature-title">🚿 Banheiros</div>
+                        <div class="apt-feature-text">3,5 banheiros completos</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-star"></i>
+                    Comodidades
+                </div>
+                <div class="apartments-info">
+                    <div class="apt-feature">
+                        <div class="apt-feature-title">🏊 Piscina</div>
+                        <div class="apt-feature-text">Piscina climatizada</div>
+                    </div>
+                    <div class="apt-feature">
+                        <div class="apt-feature-title">♨️ Hidromassagem</div>
+                        <div class="apt-feature-text">Banheira com jatos</div>
+                    </div>
+                    <div class="apt-feature">
+                        <div class="apt-feature-title">❄️ Ar Condicionado</div>
+                        <div class="apt-feature-text">Em todos os quartos</div>
+                    </div>
+                    <div class="apt-feature">
+                        <div class="apt-feature-title">🍳 Cozinha</div>
+                        <div class="apt-feature-text">Totalmente equipada</div>
+                    </div>
+                    <div class="apt-feature">
+                        <div class="apt-feature-title">📶 Wi-Fi</div>
+                        <div class="apt-feature-text">Internet de alta velocidade</div>
+                    </div>
+                    <div class="apt-feature">
+                        <div class="apt-feature-title">🧺 Lavanderia</div>
+                        <div class="apt-feature-text">Máquina de lavar</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-images"></i>
+                    Fotos
+                </div>
+                <div class="gallery-grid">
+                    <div class="gallery-item" onclick="openPhoto('01-sala-estar.png')">
+                        <img src="01-sala-estar.png" alt="Sala Estar">
+                        <div class="gallery-label">🛋️ Sala Estar</div>
+                    </div>
+                    <div class="gallery-item" onclick="openPhoto('02-sala-estar.png')">
+                        <img src="02-sala-estar.png" alt="Sala">
+                        <div class="gallery-label">🛋️ Sala</div>
+                    </div>
+                    <div class="gallery-item" onclick="openPhoto('03-corredor.png')">
+                        <img src="03-corredor.png" alt="Corredor">
+                        <div class="gallery-label">🚪 Corredor</div>
+                    </div>
+                    <div class="gallery-item" onclick="openPhoto('04-cozinha.png')">
+                        <img src="04-cozinha.png" alt="Cozinha">
+                        <div class="gallery-label">🍳 Cozinha</div>
+                    </div>
+                    <div class="gallery-item" onclick="openPhoto('05-cozinha.png')">
+                        <img src="05-cozinha.png" alt="Cozinha">
+                        <div class="gallery-label">🍴 Cozinha</div>
+                    </div>
+                    <div class="gallery-item" onclick="openPhoto('06-sala-jantar.png')">
+                        <img src="06-sala-jantar.png" alt="Jantar">
+                        <div class="gallery-label">🍽️ Sala Jantar</div>
+                    </div>
+                    <div class="gallery-item" onclick="openPhoto('07-sala-jantar.png')">
+                        <img src="07-sala-jantar.png" alt="Jantar">
+                        <div class="gallery-label">🍽️ Jantar</div>
+                    </div>
+                    <div class="gallery-item" onclick="openPhoto('08-quarto-normal.png')">
+                        <img src="08-quarto-normal.png" alt="Quarto">
+                        <div class="gallery-label">🛏️ Quarto</div>
+                    </div>
+                    <div class="gallery-item" onclick="openPhoto('09-suites.png')">
+                        <img src="09-suites.png" alt="Suite 1">
+                        <div class="gallery-label">🛏️ Suite 1</div>
+                    </div>
+                    <div class="gallery-item" onclick="openPhoto('10-suites.png')">
+                        <img src="10-suites.png" alt="Suite 2">
+                        <div class="gallery-label">🛏️ Suite 2</div>
+                    </div>
+                    <div class="gallery-item" onclick="openPhoto('11-suites.png')">
+                        <img src="11-suites.png" alt="Suite 3">
+                        <div class="gallery-label">🛏️ Suite 3</div>
+                    </div>
+                    <div class="gallery-item" onclick="openPhoto('12-varanda.png')">
+                        <img src="12-varanda.png" alt="Varanda">
+                        <div class="gallery-label">🌅 Varanda</div>
+                    </div>
+                    <div class="gallery-item" onclick="openPhoto('13-lavabo.png')">
+                        <img src="13-lavabo.png" alt="Lavabo">
+                        <div class="gallery-label">🚽 Lavabo</div>
+                    </div>
+                    <div class="gallery-item" onclick="openPhoto('14-lavanderia.png')">
+                        <img src="14-lavanderia.png" alt="Lavanderia">
+                        <div class="gallery-label">🧺 Lavanderia</div>
+                    </div>
+                    <div class="gallery-item" onclick="openPhoto('15-area-piscina.png')">
+                        <img src="15-area-piscina.png" alt="Área Piscina">
+                        <div class="gallery-label">🏊 Área Piscina</div>
+                    </div>
+                    <div class="gallery-item" onclick="openPhoto('16-piscina-terraço-dia.png')">
+                        <img src="16-piscina-terraço-dia.png" alt="Terraço">
+                        <div class="gallery-label">☀️ Terraço</div>
+                    </div>
+                    <div class="gallery-item" onclick="openPhoto('17-piscina-entrada.png')">
+                        <img src="17-piscina-entrada.png" alt="Entrada">
+                        <div class="gallery-label">🌅 Entrada</div>
+                    </div>
+                    <div class="gallery-item" onclick="openPhoto('18-piscina-completa.png')">
+                        <img src="18-piscina-completa.png" alt="Piscina">
+                        <div class="gallery-label">🏊 Piscina</div>
+                    </div>
+                    <div class="gallery-item" onclick="openPhoto('19-hidromassagem.png')">
+                        <img src="19-hidromassagem.png" alt="Hidromassagem">
+                        <div class="gallery-label">♨️ Hidromassagem</div>
+                    </div>
+                    <div class="gallery-item" onclick="openPhoto('20-hidromassagem.png')">
+                        <img src="20-hidromassagem.png" alt="Banheira">
+                        <div class="gallery-label">🛁 Banheira</div>
+                    </div>
+                    <div class="gallery-item" onclick="openPhoto('21-sala-de-jogos.png')">
+                        <img src="21-sala-de-jogos.png" alt="Jogos">
+                        <div class="gallery-label">🎱 Sala Jogos</div>
+                    </div>
+                    <div class="gallery-item" onclick="openPhoto('22-area-infantil.png')">
+                        <img src="22-area-infantil.png" alt="Infantil">
+                        <div class="gallery-label">🎠 Infantil</div>
+                    </div>
+                    <div class="gallery-item" onclick="openPhoto('23-area-piscina.png')">
+                        <img src="23-area-piscina.png" alt="Piscina">
+                        <div class="gallery-label">🏊 Piscina</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CUSTOS -->
+        <div id="custos" class="tab-content">
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-calculator"></i>
+                    Resumo Financeiro
+                </div>
+                <div class="info-grid">
+                    <div class="info-box">
+                        <div class="info-box-label">TOTAL</div>
+                        <div class="info-box-value" style="font-size: 1.3em;">R$ 7.406,00</div>
+                    </div>
+                    <div class="info-box">
+                        <div class="info-box-label">POR PESSOA</div>
+                        <div class="info-box-value">R$ 740,60</div>
+                    </div>
+                </div>
+                <div class="info-grid" style="margin-top: 12px;">
+                    <div class="info-box">
+                        <div class="info-box-label">PARCELA/MÊS</div>
+                        <div class="info-box-value">R$ 1.234,33</div>
+                    </div>
+                    <div class="info-box">
+                        <div class="info-box-label">PARCELAS</div>
+                        <div class="info-box-value">6</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-users"></i>
+                    Divisão por Família
+                </div>
+            </div>
+
+            <div class="cost-family" onclick="toggleCostFamily(this)">
+                <div class="cost-family-header">
+                    <span class="cost-family-name">👨‍👩‍👧‍👦 Família Alessandro</span>
+                    <span class="cost-family-amount">R$ 2.962,40</span>
+                </div>
+                <div class="cost-family-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Pessoas:</span>
+                        <span class="detail-value">4 (Alessandro, Alini, Ayla, Theo)</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Percentual:</span>
+                        <span class="detail-value">40%</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Por Pessoa:</span>
+                        <span class="detail-value">R$ 740,60</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Parcela/Mês:</span>
+                        <span class="detail-value">R$ 493,73</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cost-family" style="border-left-color: #4ecdc4;" onclick="toggleCostFamily(this)">
+                <div class="cost-family-header">
+                    <span class="cost-family-name">👨‍👩‍👧‍👦 Família Alécio</span>
+                    <span class="cost-family-amount">R$ 2.962,40</span>
+                </div>
+                <div class="cost-family-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Pessoas:</span>
+                        <span class="detail-value">4 (Alécio, Vanessa, Anthony, Maria Cecília)</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Percentual:</span>
+                        <span class="detail-value">40%</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Por Pessoa:</span>
+                        <span class="detail-value">R$ 740,60</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Parcela/Mês:</span>
+                        <span class="detail-value">R$ 493,73</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cost-family" style="border-left-color: #2ecc71;" onclick="toggleCostFamily(this)">
+                <div class="cost-family-header">
+                    <span class="cost-family-name">👨‍👩 Leandro & Thamis</span>
+                    <span class="cost-family-amount">R$ 1.481,20</span>
+                </div>
+                <div class="cost-family-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Pessoas:</span>
+                        <span class="detail-value">2 (Leandro, Thamis)</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Percentual:</span>
+                        <span class="detail-value">20%</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Por Pessoa:</span>
+                        <span class="detail-value">R$ 740,60</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Parcela/Mês:</span>
+                        <span class="detail-value">R$ 246,87</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PESSOAS -->
+        <div id="pessoas" class="tab-content">
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-users"></i>
+                    10 Pessoas Confirmadas
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title" style="margin-bottom: 15px; border-bottom: 2px solid #ff6b6b; padding-bottom: 12px;">
+                    👨‍👩‍👧‍👦 Família Alessandro
+                </div>
+                <div class="member">
+                    <div class="member-name">👨 Alessandro</div>
+                </div>
+                <div class="member">
+                    <div class="member-name">👩 Alini</div>
+                </div>
+                <div class="member">
+                    <div class="member-name">👧 Ayla</div>
+                    <div class="member-age">4 anos</div>
+                </div>
+                <div class="member">
+                    <div class="member-name">👦 Theo</div>
+                    <div class="member-age">2 anos</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title" style="margin-bottom: 15px; border-bottom: 2px solid #4ecdc4; padding-bottom: 12px;">
+                    👨‍👩‍👧‍👦 Família Alécio
+                </div>
+                <div class="member">
+                    <div class="member-name">👨 Alécio</div>
+                </div>
+                <div class="member">
+                    <div class="member-name">👩 Vanessa</div>
+                </div>
+                <div class="member">
+                    <div class="member-name">👦 Anthony</div>
+                    <div class="member-age">6 anos</div>
+                </div>
+                <div class="member">
+                    <div class="member-name">👧 Maria Cecília</div>
+                    <div class="member-age">2 anos</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title" style="margin-bottom: 15px; border-bottom: 2px solid #2ecc71; padding-bottom: 12px;">
+                    👨‍👩 Leandro & Thamis
+                </div>
+                <div class="member">
+                    <div class="member-name">👨 Leandro</div>
+                </div>
+                <div class="member">
+                    <div class="member-name">👩 Thamis</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="alert" style="background: #e8f5e9; border-left-color: #2ecc71; margin: 0;">
+                    <div class="alert-title" style="color: #2ecc71;">👶 4 CRIANÇAS NA VIAGEM!</div>
+                    <div>Muita diversão garantida: Ayla (4), Theo (2), Anthony (6), Maria Cecília (2)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ATIVIDADES -->
+        <div id="atividades" class="tab-content">
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-utensils"></i>
+                    Restaurantes & Atividades
+                </div>
+            </div>
+
+            <div class="activity-card">
+                <div class="activity-icon">🎸</div>
+                <div class="activity-name">Hard Rock Cafe Itapema</div>
+                <div class="activity-desc">Sobre a água no Píer Oporto. Aberto 12h-00h (dom-qui) e 12h-01h (sex-sab).</div>
+            </div>
+
+            <div class="activity-card">
+                <div class="activity-icon">🍖</div>
+                <div class="activity-name">Churrascaria Itapema</div>
+                <div class="activity-desc">Rodízio de carnes premium. Ótimo para a família.</div>
+            </div>
+
+            <div class="activity-card">
+                <div class="activity-icon">🍝</div>
+                <div class="activity-name">Restaurante Moenda</div>
+                <div class="activity-desc">Culinária local com vista para o mar.</div>
+            </div>
+
+            <div class="activity-card">
+                <div class="activity-icon">🍜</div>
+                <div class="activity-name">Tainha Restaurante</div>
+                <div class="activity-desc">Frutos do mar frescos. Especialidade em peixe.</div>
+            </div>
+
+            <div class="activity-card">
+                <div class="activity-icon">🥘</div>
+                <div class="activity-name">Moqueca Paulista</div>
+                <div class="activity-desc">Comida típica catarinense e nordestina.</div>
+            </div>
+
+            <div class="activity-card">
+                <div class="activity-icon">🍕</div>
+                <div class="activity-name">Pizzarias Locais</div>
+                <div class="activity-desc">Italia, do Zé, Macarrone Massas. Várias opções!</div>
+            </div>
+
+            <div class="activity-card">
+                <div class="activity-icon">🏖️</div>
+                <div class="activity-name">Praia Central</div>
+                <div class="activity-desc">Praia mais famosa de Itapema. Infraestrutura completa.</div>
+            </div>
+
+            <div class="activity-card">
+                <div class="activity-icon">🏖️</div>
+                <div class="activity-name">Meia Praia</div>
+                <div class="activity-desc">Nossa praia! Perto do apartamento. 5 minutos a pé!</div>
+            </div>
+
+            <div class="activity-card">
+                <div class="activity-icon">🥾</div>
+                <div class="activity-name">Praia Grossa</div>
+                <div class="activity-desc">Trilha de 20 minutos. Praia selvagem e preservada.</div>
+            </div>
+
+            <div class="activity-card">
+                <div class="activity-icon">🌊</div>
+                <div class="activity-name">Praia do Canto</div>
+                <div class="activity-desc">Águas mais calmas. Ótima para crianças.</div>
+            </div>
+
+            <div class="activity-card">
+                <div class="activity-icon">🏝️</div>
+                <div class="activity-name">Praia da Ilhota</div>
+                <div class="activity-desc">Preservada e tranquila. Natureza intocada.</div>
+            </div>
+
+            <div class="activity-card">
+                <div class="activity-icon">🎢</div>
+                <div class="activity-name">Parque Juventude</div>
+                <div class="activity-desc">Parque com brinquedos. Diversão para as crianças!</div>
+            </div>
+
+            <div class="activity-card">
+                <div class="activity-icon">💦</div>
+                <div class="activity-name">Aquamania</div>
+                <div class="activity-desc">Parque aquático. Piscinas e escorregadores.</div>
+            </div>
+
+            <div class="activity-card">
+                <div class="activity-icon">🛍️</div>
+                <div class="activity-name">Itapema Shopping</div>
+                <div class="activity-desc">Lojas, cinema e alimentação.</div>
+            </div>
+
+            <div class="activity-card">
+                <div class="activity-icon">🏬</div>
+                <div class="activity-name">Lojas Havan</div>
+                <div class="activity-desc">Grande loja de departamentos. Muitas opções.</div>
+            </div>
+
+            <div class="activity-card">
+                <div class="activity-icon">🌅</div>
+                <div class="activity-name">Passeios ao Entardecer</div>
+                <div class="activity-desc">Caminhar pela praia ao pôr do sol. Momento em família!</div>
+            </div>
+        </div>
+
+        <!-- CHECKLIST -->
+        <div id="checklist" class="tab-content">
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-check-square"></i>
+                    O Que Levar
+                </div>
+            </div>
+
+            <label class="checklist-item">
+                <input type="checkbox">
+                <span class="checklist-label">Documentos (RG, CPF)</span>
+            </label>
+
+            <label class="checklist-item">
+                <input type="checkbox">
+                <span class="checklist-label">Cartão de Crédito / Dinheiro</span>
+            </label>
+
+            <label class="checklist-item">
+                <input type="checkbox">
+                <span class="checklist-label">Roupa de Banho</span>
+            </label>
+
+            <label class="checklist-item">
+                <input type="checkbox">
+                <span class="checklist-label">Chinelo / Havaianas</span>
+            </label>
+
+            <label class="checklist-item">
+                <input type="checkbox">
+                <span class="checklist-label">Protetor Solar (proteção alta!)</span>
+            </label>
+
+            <label class="checklist-item">
+                <input type="checkbox">
+                <span class="checklist-label">Óculos de Sol</span>
+            </label>
+
+            <label class="checklist-item">
+                <input type="checkbox">
+                <span class="checklist-label">Chapéu / Boné</span>
+            </label>
+
+            <label class="checklist-item">
+                <input type="checkbox">
+                <span class="checklist-label">Roupa para Passeios</span>
+            </label>
+
+            <label class="checklist-item">
+                <input type="checkbox">
+                <span class="checklist-label">Roupa para Comer Fora</span>
+            </label>
+
+            <label class="checklist-item">
+                <input type="checkbox">
+                <span class="checklist-label">Medicamentos Pessoais</span>
+            </label>
+
+            <label class="checklist-item">
+                <input type="checkbox">
+                <span class="checklist-label">Escova de Dentes / Pasta</span>
+            </label>
+
+            <label class="checklist-item">
+                <input type="checkbox">
+                <span class="checklist-label">Shampoo / Condicionador</span>
+            </label>
+
+            <label class="checklist-item">
+                <input type="checkbox">
+                <span class="checklist-label">Sabonete Pessoal</span>
+            </label>
+
+            <label class="checklist-item">
+                <input type="checkbox">
+                <span class="checklist-label">Desodorante</span>
+            </label>
+
+            <label class="checklist-item">
+                <input type="checkbox">
+                <span class="checklist-label">Brinquedos para Crianças</span>
+            </label>
+
+            <label class="checklist-item">
+                <input type="checkbox">
+                <span class="checklist-label">Carregador de Celular</span>
+            </label>
+
+            <label class="checklist-item">
+                <input type="checkbox">
+                <span class="checklist-label">Câmera Fotográfica</span>
+            </label>
+
+            <label class="checklist-item">
+                <input type="checkbox">
+                <span class="checklist-label">Mala/Mochila</span>
+            </label>
+        </div>
+    </div>
+
+    <div class="modal" id="photoModal">
+        <button class="modal-close" onclick="closePhoto()">✕</button>
+        <div class="modal-content">
+            <img src="" alt="" class="modal-img" id="modalImg">
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>🏖️ Férias Família Pimenta - Janeiro 2027</p>
+        <p>Itapema, Santa Catarina - Brasil</p>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            const contents = document.querySelectorAll('.tab-content');
+            const buttons = document.querySelectorAll('.tab-btn');
+            
+            contents.forEach(content => content.classList.remove('active'));
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.closest('.tab-btn').classList.add('active');
+        }
+
+        function openPhoto(src) {
+            document.getElementById('modalImg').src = src;
+            document.getElementById('photoModal').classList.add('active');
+        }
+
+        function closePhoto() {
+            document.getElementById('photoModal').classList.remove('active');
+        }
+
+        function toggleCostFamily(element) {
+            element.classList.toggle('active');
+        }
+
+        document.getElementById('photoModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePhoto();
+            }
+        });
+    </script>
+</body>
+</html>
