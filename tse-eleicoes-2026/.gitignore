@@ -1,0 +1,5 @@
+*.sqlite
+*.sqlite-*
+downloads/
+resultados/
+__pycache__/
