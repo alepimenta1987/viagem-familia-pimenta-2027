@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Crescimento de votos por estado — Presidente 2026</title>
+<style>
+/* Layout: números do país e destaques no topo, barras agrupadas por estado no centro, tabela completa ordenável embaixo. */
+:root {
+  --bg: #f3f5f8; --papel: #ffffff; --tinta: #16202e; --suave: #5a6677; --linha: #d9dfe8; --faixa: #f6f8fb;
+  --L: #c4303d; --F: #2b5cb8;
+  --serif: Charter, "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0f151e; --papel: #171f2b; --tinta: #e8edf4; --suave: #9aa6b8; --linha: #2a3545; --faixa: #1b2433;
+  --L: #ff7782; --F: #7ea6ff; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #0f151e; --papel: #171f2b; --tinta: #e8edf4; --suave: #9aa6b8; --linha: #2a3545; --faixa: #1b2433;
+  --L: #ff7782; --F: #7ea6ff; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--tinta); font: 14px/1.5 var(--sans);
+  padding: 24px max(16px, env(safe-area-inset-right, 0px)) 24px max(16px, env(safe-area-inset-left, 0px)); }
+main { max-width: 1100px; margin: 0 auto; display: grid; gap: 16px; }
+header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 4px 24px; }
+h1 { font: 700 26px/1.2 var(--serif); margin: 0; text-wrap: balance; }
+.sub { color: var(--suave); font-size: 13px; }
+section, .caixa { background: var(--papel); border: 1px solid var(--linha); border-radius: 10px; padding: 16px 18px; min-width: 0; }
+h2 { font: 600 12px/1.3 var(--sans); text-transform: uppercase; letter-spacing: .08em; color: var(--suave); margin: 0 0 4px; }
+.leg { color: var(--suave); font-size: 13px; margin: 0 0 10px; max-width: 75ch; }
+.destaques { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.rotulo { font-weight: 600; margin-bottom: 4px; display: flex; gap: 8px; align-items: center; }
+.rotulo i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.dL { background: var(--L); } .dF { background: var(--F); } .cL { color: var(--L); } .cF { color: var(--F); }
+.num { font: 700 clamp(34px, 6vw, 48px)/1.1 var(--serif); font-variant-numeric: tabular-nums; }
+.meta { color: var(--suave); font-size: 13px; font-variant-numeric: tabular-nums; }
+.trio { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--linha); }
+.dest span { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--suave); }
+.dest b { font: 700 20px/1.3 var(--serif); font-variant-numeric: tabular-nums; }
+.dest em { display: block; font-style: normal; font-size: 12px; color: var(--suave); font-variant-numeric: tabular-nums; }
+svg { width: 100%; height: auto; display: block; }
+svg text { font-family: var(--sans); fill: var(--suave); }
+.grade { stroke: var(--linha); stroke-width: 1; }
+.zero { stroke: var(--tinta); stroke-width: 1.2; opacity: .55; }
+.sep { stroke: var(--linha); stroke-width: 1; stroke-dasharray: 4 4; }
+.eixo { font-size: 11px; font-variant-numeric: tabular-nums; }
+.uf { font-size: 13px; font-weight: 700; fill: var(--tinta); }
+.bL { fill: var(--L); } .bF { fill: var(--F); }
+svg .val { font-size: 11px; font-weight: 700; font-variant-numeric: tabular-nums; }
+svg .val.L { fill: var(--L); } svg .val.F { fill: var(--F); }
+.legenda { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12px; color: var(--suave); margin-top: 6px; }
+.legenda i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; vertical-align: middle; margin-right: 6px; }
+.tabela { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; font-size: 12.5px; }
+th, td { padding: 6px 8px; text-align: right; border-bottom: 1px solid var(--linha); white-space: nowrap; }
+thead th { font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--suave); font-weight: 600; cursor: pointer; user-select: none; }
+thead th:hover { color: var(--tinta); }
+thead tr.grupo th { cursor: default; text-align: center; border-bottom: 0; padding-bottom: 0; font-size: 12px; }
+thead tr.grupo th.L { color: var(--L); } thead tr.grupo th.F { color: var(--F); }
+tbody th, tfoot th { text-align: left; font-weight: 400; }
+tbody th span, tfoot th span { color: var(--suave); }
+tbody tr:nth-child(even) { background: var(--faixa); }
+tr.total th, tr.total td { border-top: 2px solid var(--tinta); border-bottom: 0; font-weight: 600; }
+.notas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; font-size: 12.5px; color: var(--suave); }
+.notas h3 { font-size: 12px; margin: 0 0 4px; color: var(--tinta); }
+.notas p { margin: 0; max-width: 62ch; }
+footer { color: var(--suave); font-size: 12px; }
+@media (max-width: 860px) { .notas { grid-template-columns: 1fr; } }
+@media (max-width: 560px) { .destaques, .trio { grid-template-columns: 1fr; } }
+@media print { body { padding: 8mm; background: #fff; } @page { size: A4 portrait; margin: 0; } }
+</style>
+</head>
+<body>
+<main>
+<header>
+  <h1>Taxa de crescimento de votos por estado, do 1º para o 2º turno</h1>
+  <div class="sub">Presidente 2026 · Lula e Flávio Bolsonaro · 27 UFs e exterior</div>
+</header>
+
+<div class="destaques">
+  <div class="caixa">
+    <div class="rotulo"><i class="dL"></i>Lula</div>
+    <div class="num cL">+19,3%</div>
+    <div class="meta">53.879.538 → 64.256.232 votos no país</div>
+    <div class="trio">
+      <div class="dest"><span>Cresceu mais</span><b class="cL">GO +33,4%</b><em>Goiás: 1.188.880 → 1.585.555</em></div>
+      <div class="dest"><span>Cresceu menos</span><b class="cL">AP +4,9%</b><em>Amapá: 212.503 → 222.968</em></div>
+    </div>
+  </div>
+  <div class="caixa">
+    <div class="rotulo"><i class="dF"></i>Flávio Bolsonaro</div>
+    <div class="num cF">+6,6%</div>
+    <div class="meta">56.104.503 → 59.826.041 votos no país</div>
+    <div class="trio">
+      <div class="dest"><span>Cresceu mais</span><b class="cF">GO +14,3%</b><em>Goiás: 2.051.888 → 2.345.334</em></div>
+      <div class="dest"><span>Cresceu menos</span><b class="cF">AP -6,4%</b><em>Amapá: 212.278 → 198.674</em></div>
+    </div>
+  </div>
+</div>
+
+<section>
+  <h2>Taxa de crescimento por estado (ordenado pela taxa de Lula)</h2>
+  <p class="leg">Variação dos votos do candidato no estado: (votos do 2º turno ÷ votos do 1º turno) − 1. Lula cresceu mais que Flávio em 27 das 27 UFs. Flávio perdeu votos em 6: RR, TO, AM, MA, AC, AP.</p>
+  <svg viewBox="0 0 1040 838" role="img" aria-label="Taxa de crescimento de votos de Lula e de Flávio Bolsonaro por estado">
+<line x1="40.0" x2="40.0" y1="18" y2="808" class="grade"/>
+<text x="40.0" y="826" class="eixo" text-anchor="middle">-10%</text>
+<line x1="229.2" x2="229.2" y1="18" y2="808" class="zero"/>
+<text x="229.2" y="826" class="eixo" text-anchor="middle">0%</text>
+<line x1="418.4" x2="418.4" y1="18" y2="808" class="grade"/>
+<text x="418.4" y="826" class="eixo" text-anchor="middle">+10%</text>
+<line x1="607.6" x2="607.6" y1="18" y2="808" class="grade"/>
+<text x="607.6" y="826" class="eixo" text-anchor="middle">+20%</text>
+<line x1="796.8" x2="796.8" y1="18" y2="808" class="grade"/>
+<text x="796.8" y="826" class="eixo" text-anchor="middle">+30%</text>
+<line x1="986.0" x2="986.0" y1="18" y2="808" class="grade"/>
+<text x="986.0" y="826" class="eixo" text-anchor="middle">+40%</text>
+<text x="32" y="42.0" class="uf" text-anchor="end">GO</text>
+<rect x="229.2" y="28" width="631.3" height="9" rx="2" class="bL"><title>Goiás · Lula: +33,4%</title></rect>
+<text x="866.5" y="36.0" class="val L" text-anchor="start">+33,4%</text>
+<rect x="229.2" y="39" width="270.6" height="9" rx="2" class="bF"><title>Goiás · Flávio Bolsonaro: +14,3%</title></rect>
+<text x="505.8" y="47.0" class="val F" text-anchor="start">+14,3%</text>
+<text x="32" y="70.0" class="uf" text-anchor="end">SP</text>
+<rect x="229.2" y="56" width="520.3" height="9" rx="2" class="bL"><title>São Paulo · Lula: +27,5%</title></rect>
+<text x="755.5" y="64.0" class="val L" text-anchor="start">+27,5%</text>
+<rect x="229.2" y="67" width="178.2" height="9" rx="2" class="bF"><title>São Paulo · Flávio Bolsonaro: +9,4%</title></rect>
+<text x="413.4" y="75.0" class="val F" text-anchor="start">+9,4%</text>
+<text x="32" y="98.0" class="uf" text-anchor="end">SC</text>
+<rect x="229.2" y="84" width="488.7" height="9" rx="2" class="bL"><title>Santa Catarina · Lula: +25,8%</title></rect>
+<text x="723.9" y="92.0" class="val L" text-anchor="start">+25,8%</text>
+<rect x="229.2" y="95" width="138.8" height="9" rx="2" class="bF"><title>Santa Catarina · Flávio Bolsonaro: +7,3%</title></rect>
+<text x="374.0" y="103.0" class="val F" text-anchor="start">+7,3%</text>
+<text x="32" y="126.0" class="uf" text-anchor="end">PR</text>
+<rect x="229.2" y="112" width="471.4" height="9" rx="2" class="bL"><title>Paraná · Lula: +24,9%</title></rect>
+<text x="706.6" y="120.0" class="val L" text-anchor="start">+24,9%</text>
+<rect x="229.2" y="123" width="166.0" height="9" rx="2" class="bF"><title>Paraná · Flávio Bolsonaro: +8,8%</title></rect>
+<text x="401.2" y="131.0" class="val F" text-anchor="start">+8,8%</text>
+<text x="32" y="154.0" class="uf" text-anchor="end">RJ</text>
+<rect x="229.2" y="140" width="446.9" height="9" rx="2" class="bL"><title>Rio de Janeiro · Lula: +23,6%</title></rect>
+<text x="682.1" y="148.0" class="val L" text-anchor="start">+23,6%</text>
+<rect x="229.2" y="151" width="77.0" height="9" rx="2" class="bF"><title>Rio de Janeiro · Flávio Bolsonaro: +4,1%</title></rect>
+<text x="312.2" y="159.0" class="val F" text-anchor="start">+4,1%</text>
+<text x="32" y="182.0" class="uf" text-anchor="end">RS</text>
+<rect x="229.2" y="168" width="436.8" height="9" rx="2" class="bL"><title>Rio Grande do Sul · Lula: +23,1%</title></rect>
+<text x="672.0" y="176.0" class="val L" text-anchor="start">+23,1%</text>
+<rect x="229.2" y="179" width="159.1" height="9" rx="2" class="bF"><title>Rio Grande do Sul · Flávio Bolsonaro: +8,4%</title></rect>
+<text x="394.3" y="187.0" class="val F" text-anchor="start">+8,4%</text>
+<text x="32" y="210.0" class="uf" text-anchor="end">MG</text>
+<rect x="229.2" y="196" width="423.8" height="9" rx="2" class="bL"><title>Minas Gerais · Lula: +22,4%</title></rect>
+<text x="659.0" y="204.0" class="val L" text-anchor="start">+22,4%</text>
+<rect x="229.2" y="207" width="152.0" height="9" rx="2" class="bF"><title>Minas Gerais · Flávio Bolsonaro: +8,0%</title></rect>
+<text x="387.2" y="215.0" class="val F" text-anchor="start">+8,0%</text>
+<text x="32" y="238.0" class="uf" text-anchor="end">DF</text>
+<rect x="229.2" y="224" width="418.9" height="9" rx="2" class="bL"><title>Distrito Federal · Lula: +22,1%</title></rect>
+<text x="654.1" y="232.0" class="val L" text-anchor="start">+22,1%</text>
+<rect x="229.2" y="235" width="145.4" height="9" rx="2" class="bF"><title>Distrito Federal · Flávio Bolsonaro: +7,7%</title></rect>
+<text x="380.6" y="243.0" class="val F" text-anchor="start">+7,7%</text>
+<text x="32" y="266.0" class="uf" text-anchor="end">MS</text>
+<rect x="229.2" y="252" width="410.4" height="9" rx="2" class="bL"><title>Mato Grosso do Sul · Lula: +21,7%</title></rect>
+<text x="645.6" y="260.0" class="val L" text-anchor="start">+21,7%</text>
+<rect x="229.2" y="263" width="118.2" height="9" rx="2" class="bF"><title>Mato Grosso do Sul · Flávio Bolsonaro: +6,2%</title></rect>
+<text x="353.4" y="271.0" class="val F" text-anchor="start">+6,2%</text>
+<text x="32" y="294.0" class="uf" text-anchor="end">MT</text>
+<rect x="229.2" y="280" width="365.9" height="9" rx="2" class="bL"><title>Mato Grosso · Lula: +19,3%</title></rect>
+<text x="601.1" y="288.0" class="val L" text-anchor="start">+19,3%</text>
+<rect x="229.2" y="291" width="76.5" height="9" rx="2" class="bF"><title>Mato Grosso · Flávio Bolsonaro: +4,0%</title></rect>
+<text x="311.7" y="299.0" class="val F" text-anchor="start">+4,0%</text>
+<text x="32" y="322.0" class="uf" text-anchor="end">ES</text>
+<rect x="229.2" y="308" width="338.2" height="9" rx="2" class="bL"><title>Espírito Santo · Lula: +17,9%</title></rect>
+<text x="573.4" y="316.0" class="val L" text-anchor="start">+17,9%</text>
+<rect x="229.2" y="319" width="94.1" height="9" rx="2" class="bF"><title>Espírito Santo · Flávio Bolsonaro: +5,0%</title></rect>
+<text x="329.3" y="327.0" class="val F" text-anchor="start">+5,0%</text>
+<text x="32" y="350.0" class="uf" text-anchor="end">RO</text>
+<rect x="229.2" y="336" width="330.4" height="9" rx="2" class="bL"><title>Rondônia · Lula: +17,5%</title></rect>
+<text x="565.6" y="344.0" class="val L" text-anchor="start">+17,5%</text>
+<rect x="229.2" y="347" width="62.0" height="9" rx="2" class="bF"><title>Rondônia · Flávio Bolsonaro: +3,3%</title></rect>
+<text x="297.2" y="355.0" class="val F" text-anchor="start">+3,3%</text>
+<text x="32" y="378.0" class="uf" text-anchor="end">PB</text>
+<rect x="229.2" y="364" width="310.5" height="9" rx="2" class="bL"><title>Paraíba · Lula: +16,4%</title></rect>
+<text x="545.7" y="372.0" class="val L" text-anchor="start">+16,4%</text>
+<rect x="229.2" y="375" width="77.0" height="9" rx="2" class="bF"><title>Paraíba · Flávio Bolsonaro: +4,1%</title></rect>
+<text x="312.2" y="383.0" class="val F" text-anchor="start">+4,1%</text>
+<text x="32" y="406.0" class="uf" text-anchor="end">PE</text>
+<rect x="229.2" y="392" width="300.0" height="9" rx="2" class="bL"><title>Pernambuco · Lula: +15,9%</title></rect>
+<text x="535.2" y="400.0" class="val L" text-anchor="start">+15,9%</text>
+<rect x="229.2" y="403" width="102.9" height="9" rx="2" class="bF"><title>Pernambuco · Flávio Bolsonaro: +5,4%</title></rect>
+<text x="338.1" y="411.0" class="val F" text-anchor="start">+5,4%</text>
+<text x="32" y="434.0" class="uf" text-anchor="end">AL</text>
+<rect x="229.2" y="420" width="298.7" height="9" rx="2" class="bL"><title>Alagoas · Lula: +15,8%</title></rect>
+<text x="533.9" y="428.0" class="val L" text-anchor="start">+15,8%</text>
+<rect x="229.2" y="431" width="21.7" height="9" rx="2" class="bF"><title>Alagoas · Flávio Bolsonaro: +1,1%</title></rect>
+<text x="256.9" y="439.0" class="val F" text-anchor="start">+1,1%</text>
+<text x="32" y="462.0" class="uf" text-anchor="end">SE</text>
+<rect x="229.2" y="448" width="294.0" height="9" rx="2" class="bL"><title>Sergipe · Lula: +15,5%</title></rect>
+<text x="529.2" y="456.0" class="val L" text-anchor="start">+15,5%</text>
+<rect x="229.2" y="459" width="70.3" height="9" rx="2" class="bF"><title>Sergipe · Flávio Bolsonaro: +3,7%</title></rect>
+<text x="305.5" y="467.0" class="val F" text-anchor="start">+3,7%</text>
+<text x="32" y="490.0" class="uf" text-anchor="end">BA</text>
+<rect x="229.2" y="476" width="274.0" height="9" rx="2" class="bL"><title>Bahia · Lula: +14,5%</title></rect>
+<text x="509.2" y="484.0" class="val L" text-anchor="start">+14,5%</text>
+<rect x="229.2" y="487" width="128.7" height="9" rx="2" class="bF"><title>Bahia · Flávio Bolsonaro: +6,8%</title></rect>
+<text x="363.9" y="495.0" class="val F" text-anchor="start">+6,8%</text>
+<text x="32" y="518.0" class="uf" text-anchor="end">RN</text>
+<rect x="229.2" y="504" width="268.4" height="9" rx="2" class="bL"><title>Rio Grande do Norte · Lula: +14,2%</title></rect>
+<text x="503.6" y="512.0" class="val L" text-anchor="start">+14,2%</text>
+<rect x="229.2" y="515" width="44.4" height="9" rx="2" class="bF"><title>Rio Grande do Norte · Flávio Bolsonaro: +2,3%</title></rect>
+<text x="279.6" y="523.0" class="val F" text-anchor="start">+2,3%</text>
+<text x="32" y="546.0" class="uf" text-anchor="end">CE</text>
+<rect x="229.2" y="532" width="255.9" height="9" rx="2" class="bL"><title>Ceará · Lula: +13,5%</title></rect>
+<text x="491.1" y="540.0" class="val L" text-anchor="start">+13,5%</text>
+<rect x="229.2" y="543" width="67.4" height="9" rx="2" class="bF"><title>Ceará · Flávio Bolsonaro: +3,6%</title></rect>
+<text x="302.6" y="551.0" class="val F" text-anchor="start">+3,6%</text>
+<text x="32" y="574.0" class="uf" text-anchor="end">RR</text>
+<rect x="229.2" y="560" width="231.0" height="9" rx="2" class="bL"><title>Roraima · Lula: +12,2%</title></rect>
+<text x="466.2" y="568.0" class="val L" text-anchor="start">+12,2%</text>
+<rect x="133.9" y="571" width="95.3" height="9" rx="2" class="bF"><title>Roraima · Flávio Bolsonaro: -5,0%</title></rect>
+<text x="127.9" y="579.0" class="val F" text-anchor="end">-5,0%</text>
+<text x="32" y="602.0" class="uf" text-anchor="end">PA</text>
+<rect x="229.2" y="588" width="205.2" height="9" rx="2" class="bL"><title>Pará · Lula: +10,8%</title></rect>
+<text x="440.4" y="596.0" class="val L" text-anchor="start">+10,8%</text>
+<rect x="229.2" y="599" width="31.5" height="9" rx="2" class="bF"><title>Pará · Flávio Bolsonaro: +1,7%</title></rect>
+<text x="266.7" y="607.0" class="val F" text-anchor="start">+1,7%</text>
+<text x="32" y="630.0" class="uf" text-anchor="end">TO</text>
+<rect x="229.2" y="616" width="182.4" height="9" rx="2" class="bL"><title>Tocantins · Lula: +9,6%</title></rect>
+<text x="417.6" y="624.0" class="val L" text-anchor="start">+9,6%</text>
+<rect x="223.5" y="627" width="5.7" height="9" rx="2" class="bF"><title>Tocantins · Flávio Bolsonaro: -0,3%</title></rect>
+<text x="217.5" y="635.0" class="val F" text-anchor="end">-0,3%</text>
+<text x="32" y="658.0" class="uf" text-anchor="end">AM</text>
+<rect x="229.2" y="644" width="178.5" height="9" rx="2" class="bL"><title>Amazonas · Lula: +9,4%</title></rect>
+<text x="413.7" y="652.0" class="val L" text-anchor="start">+9,4%</text>
+<rect x="226.3" y="655" width="2.9" height="9" rx="2" class="bF"><title>Amazonas · Flávio Bolsonaro: -0,2%</title></rect>
+<text x="220.3" y="663.0" class="val F" text-anchor="end">-0,2%</text>
+<text x="32" y="686.0" class="uf" text-anchor="end">MA</text>
+<rect x="229.2" y="672" width="178.4" height="9" rx="2" class="bL"><title>Maranhão · Lula: +9,4%</title></rect>
+<text x="413.6" y="680.0" class="val L" text-anchor="start">+9,4%</text>
+<rect x="215.4" y="683" width="13.8" height="9" rx="2" class="bF"><title>Maranhão · Flávio Bolsonaro: -0,7%</title></rect>
+<text x="209.4" y="691.0" class="val F" text-anchor="end">-0,7%</text>
+<text x="32" y="714.0" class="uf" text-anchor="end">PI</text>
+<rect x="229.2" y="700" width="161.8" height="9" rx="2" class="bL"><title>Piauí · Lula: +8,6%</title></rect>
+<text x="397.0" y="708.0" class="val L" text-anchor="start">+8,6%</text>
+<rect x="229.2" y="711" width="32.3" height="9" rx="2" class="bF"><title>Piauí · Flávio Bolsonaro: +1,7%</title></rect>
+<text x="267.5" y="719.0" class="val F" text-anchor="start">+1,7%</text>
+<text x="32" y="742.0" class="uf" text-anchor="end">AC</text>
+<rect x="229.2" y="728" width="136.8" height="9" rx="2" class="bL"><title>Acre · Lula: +7,2%</title></rect>
+<text x="372.0" y="736.0" class="val L" text-anchor="start">+7,2%</text>
+<rect x="134.9" y="739" width="94.3" height="9" rx="2" class="bF"><title>Acre · Flávio Bolsonaro: -5,0%</title></rect>
+<text x="128.9" y="747.0" class="val F" text-anchor="end">-5,0%</text>
+<text x="32" y="770.0" class="uf" text-anchor="end">AP</text>
+<rect x="229.2" y="756" width="93.2" height="9" rx="2" class="bL"><title>Amapá · Lula: +4,9%</title></rect>
+<text x="328.4" y="764.0" class="val L" text-anchor="start">+4,9%</text>
+<rect x="107.9" y="767" width="121.3" height="9" rx="2" class="bF"><title>Amapá · Flávio Bolsonaro: -6,4%</title></rect>
+<text x="101.9" y="775.0" class="val F" text-anchor="end">-6,4%</text>
+<line x1="10" x2="1026" y1="778" y2="778" class="sep"/>
+<text x="32" y="798.0" class="uf" text-anchor="end">ZZ</text>
+<rect x="229.2" y="784" width="514.1" height="9" rx="2" class="bL"><title>Exterior · Lula: +27,2%</title></rect>
+<text x="749.3" y="792.0" class="val L" text-anchor="start">+27,2%</text>
+<rect x="229.2" y="795" width="362.8" height="9" rx="2" class="bF"><title>Exterior · Flávio Bolsonaro: +19,2%</title></rect>
+<text x="598.0" y="803.0" class="val F" text-anchor="start">+19,2%</text>
+</svg>
+  <div class="legenda"><span><i class="dL"></i>Lula</span><span><i class="dF"></i>Flávio Bolsonaro</span></div>
+</section>
+
+<section>
+  <h2>Tabela completa</h2>
+  <p class="leg">Clique no título de uma coluna para ordenar. A diferença é a taxa de Lula menos a de Flávio, em pontos percentuais.</p>
+  <div class="tabela"><table id="tab">
+    <thead>
+      <tr class="grupo"><th></th><th colspan="4" class="L">Lula</th><th colspan="4" class="F">Flávio Bolsonaro</th><th></th></tr>
+      <tr><th style="text-align:left">Estado</th><th>1º turno</th><th>2º turno</th><th>Ganho</th><th>Taxa</th><th>1º turno</th><th>2º turno</th><th>Ganho</th><th>Taxa</th><th>Diferença</th></tr>
+    </thead>
+    <tbody><tr data-uf="GO"><th scope="row"><b>GO</b> <span>Goiás</span></th><td data-v="1188880">1.188.880</td><td data-v="1585555">1.585.555</td><td data-v="396675">396.675</td><td class="cL" data-v="33.3654"><b>+33,4%</b></td><td data-v="2051888">2.051.888</td><td data-v="2345334">2.345.334</td><td data-v="293446">293.446</td><td class="cF" data-v="14.3013"><b>+14,3%</b></td><td data-v="19.0642">+19,1 p.p.</td></tr><tr data-uf="SP"><th scope="row"><b>SP</b> <span>São Paulo</span></th><td data-v="9505413">9.505.413</td><td data-v="12119274">12.119.274</td><td data-v="2613861">2.613.861</td><td class="cL" data-v="27.4987"><b>+27,5%</b></td><td data-v="12922023">12.922.023</td><td data-v="14139178">14.139.178</td><td data-v="1217155">1.217.155</td><td class="cF" data-v="9.4192"><b>+9,4%</b></td><td data-v="18.0794">+18,1 p.p.</td></tr><tr data-uf="SC"><th scope="row"><b>SC</b> <span>Santa Catarina</span></th><td data-v="1127168">1.127.168</td><td data-v="1418314">1.418.314</td><td data-v="291146">291.146</td><td class="cL" data-v="25.8299"><b>+25,8%</b></td><td data-v="3000020">3.000.020</td><td data-v="3220071">3.220.071</td><td data-v="220051">220.051</td><td class="cF" data-v="7.3350"><b>+7,3%</b></td><td data-v="18.4949">+18,5 p.p.</td></tr><tr data-uf="PR"><th scope="row"><b>PR</b> <span>Paraná</span></th><td data-v="2054597">2.054.597</td><td data-v="2566504">2.566.504</td><td data-v="511907">511.907</td><td class="cL" data-v="24.9152"><b>+24,9%</b></td><td data-v="3945345">3.945.345</td><td data-v="4291444">4.291.444</td><td data-v="346099">346.099</td><td class="cF" data-v="8.7723"><b>+8,8%</b></td><td data-v="16.1429">+16,1 p.p.</td></tr><tr data-uf="RJ"><th scope="row"><b>RJ</b> <span>Rio de Janeiro</span></th><td data-v="3693021">3.693.021</td><td data-v="4565393">4.565.393</td><td data-v="872372">872.372</td><td class="cL" data-v="23.6222"><b>+23,6%</b></td><td data-v="4966844">4.966.844</td><td data-v="5169033">5.169.033</td><td data-v="202189">202.189</td><td class="cF" data-v="4.0708"><b>+4,1%</b></td><td data-v="19.5514">+19,6 p.p.</td></tr><tr data-uf="RS"><th scope="row"><b>RS</b> <span>Rio Grande do Sul</span></th><td data-v="2294759">2.294.759</td><td data-v="2824552">2.824.552</td><td data-v="529793">529.793</td><td class="cL" data-v="23.0871"><b>+23,1%</b></td><td data-v="3573783">3.573.783</td><td data-v="3874378">3.874.378</td><td data-v="300595">300.595</td><td class="cF" data-v="8.4111"><b>+8,4%</b></td><td data-v="14.6760">+14,7 p.p.</td></tr><tr data-uf="MG"><th scope="row"><b>MG</b> <span>Minas Gerais</span></th><td data-v="5188936">5.188.936</td><td data-v="6351099">6.351.099</td><td data-v="1162163">1.162.163</td><td class="cL" data-v="22.3969"><b>+22,4%</b></td><td data-v="5777548">5.777.548</td><td data-v="6241786">6.241.786</td><td data-v="464238">464.238</td><td class="cF" data-v="8.0352"><b>+8,0%</b></td><td data-v="14.3617">+14,4 p.p.</td></tr><tr data-uf="DF"><th scope="row"><b>DF</b> <span>Distrito Federal</span></th><td data-v="675627">675.627</td><td data-v="825224">825.224</td><td data-v="149597">149.597</td><td class="cL" data-v="22.1420"><b>+22,1%</b></td><td data-v="909616">909.616</td><td data-v="979542">979.542</td><td data-v="69926">69.926</td><td class="cF" data-v="7.6874"><b>+7,7%</b></td><td data-v="14.4545">+14,5 p.p.</td></tr><tr data-uf="MS"><th scope="row"><b>MS</b> <span>Mato Grosso do Sul</span></th><td data-v="516855">516.855</td><td data-v="628973">628.973</td><td data-v="112118">112.118</td><td class="cL" data-v="21.6924"><b>+21,7%</b></td><td data-v="873351">873.351</td><td data-v="927892">927.892</td><td data-v="54541">54.541</td><td class="cF" data-v="6.2450"><b>+6,2%</b></td><td data-v="15.4473">+15,4 p.p.</td></tr><tr data-uf="MT"><th scope="row"><b>MT</b> <span>Mato Grosso</span></th><td data-v="581681">581.681</td><td data-v="694167">694.167</td><td data-v="112486">112.486</td><td class="cL" data-v="19.3381"><b>+19,3%</b></td><td data-v="1298581">1.298.581</td><td data-v="1351099">1.351.099</td><td data-v="52518">52.518</td><td class="cF" data-v="4.0443"><b>+4,0%</b></td><td data-v="15.2938">+15,3 p.p.</td></tr><tr data-uf="ES"><th scope="row"><b>ES</b> <span>Espírito Santo</span></th><td data-v="850028">850.028</td><td data-v="1001965">1.001.965</td><td data-v="151937">151.937</td><td class="cL" data-v="17.8744"><b>+17,9%</b></td><td data-v="1233194">1.233.194</td><td data-v="1294504">1.294.504</td><td data-v="61310">61.310</td><td class="cF" data-v="4.9716"><b>+5,0%</b></td><td data-v="12.9027">+12,9 p.p.</td></tr><tr data-uf="RO"><th scope="row"><b>RO</b> <span>Rondônia</span></th><td data-v="250667">250.667</td><td data-v="294446">294.446</td><td data-v="43779">43.779</td><td class="cL" data-v="17.4650"><b>+17,5%</b></td><td data-v="652988">652.988</td><td data-v="674382">674.382</td><td data-v="21394">21.394</td><td class="cF" data-v="3.2763"><b>+3,3%</b></td><td data-v="14.1887">+14,2 p.p.</td></tr><tr data-uf="PB"><th scope="row"><b>PB</b> <span>Paraíba</span></th><td data-v="1541127">1.541.127</td><td data-v="1794059">1.794.059</td><td data-v="252932">252.932</td><td class="cL" data-v="16.4121"><b>+16,4%</b></td><td data-v="831377">831.377</td><td data-v="865210">865.210</td><td data-v="33833">33.833</td><td class="cF" data-v="4.0695"><b>+4,1%</b></td><td data-v="12.3426">+12,3 p.p.</td></tr><tr data-uf="PE"><th scope="row"><b>PE</b> <span>Pernambuco</span></th><td data-v="3553971">3.553.971</td><td data-v="4117513">4.117.513</td><td data-v="563542">563.542</td><td class="cL" data-v="15.8567"><b>+15,9%</b></td><td data-v="1738043">1.738.043</td><td data-v="1832554">1.832.554</td><td data-v="94511">94.511</td><td class="cF" data-v="5.4378"><b>+5,4%</b></td><td data-v="10.4189">+10,4 p.p.</td></tr><tr data-uf="AL"><th scope="row"><b>AL</b> <span>Alagoas</span></th><td data-v="995459">995.459</td><td data-v="1152621">1.152.621</td><td data-v="157162">157.162</td><td class="cL" data-v="15.7879"><b>+15,8%</b></td><td data-v="735718">735.718</td><td data-v="744140">744.140</td><td data-v="8422">8.422</td><td class="cF" data-v="1.1447"><b>+1,1%</b></td><td data-v="14.6432">+14,6 p.p.</td></tr><tr data-uf="SE"><th scope="row"><b>SE</b> <span>Sergipe</span></th><td data-v="856019">856.019</td><td data-v="989041">989.041</td><td data-v="133022">133.022</td><td class="cL" data-v="15.5396"><b>+15,5%</b></td><td data-v="417839">417.839</td><td data-v="433354">433.354</td><td data-v="15515">15.515</td><td class="cF" data-v="3.7132"><b>+3,7%</b></td><td data-v="11.8265">+11,8 p.p.</td></tr><tr data-uf="BA"><th scope="row"><b>BA</b> <span>Bahia</span></th><td data-v="5664771">5.664.771</td><td data-v="6485258">6.485.258</td><td data-v="820487">820.487</td><td class="cL" data-v="14.4840"><b>+14,5%</b></td><td data-v="2442585">2.442.585</td><td data-v="2608761">2.608.761</td><td data-v="166176">166.176</td><td class="cF" data-v="6.8033"><b>+6,8%</b></td><td data-v="7.6807">+7,7 p.p.</td></tr><tr data-uf="RN"><th scope="row"><b>RN</b> <span>Rio Grande do Norte</span></th><td data-v="1237963">1.237.963</td><td data-v="1413596">1.413.596</td><td data-v="175633">175.633</td><td class="cL" data-v="14.1873"><b>+14,2%</b></td><td data-v="720493">720.493</td><td data-v="737409">737.409</td><td data-v="16916">16.916</td><td class="cF" data-v="2.3478"><b>+2,3%</b></td><td data-v="11.8394">+11,8 p.p.</td></tr><tr data-uf="CE"><th scope="row"><b>CE</b> <span>Ceará</span></th><td data-v="3555263">3.555.263</td><td data-v="4036124">4.036.124</td><td data-v="480861">480.861</td><td class="cL" data-v="13.5253"><b>+13,5%</b></td><td data-v="1756850">1.756.850</td><td data-v="1819478">1.819.478</td><td data-v="62628">62.628</td><td class="cF" data-v="3.5648"><b>+3,6%</b></td><td data-v="9.9605">+10,0 p.p.</td></tr><tr data-uf="RR"><th scope="row"><b>RR</b> <span>Roraima</span></th><td data-v="74420">74.420</td><td data-v="83505">83.505</td><td data-v="9085">9.085</td><td class="cL" data-v="12.2077"><b>+12,2%</b></td><td data-v="231322">231.322</td><td data-v="219675">219.675</td><td data-v="-11647">-11.647</td><td class="cF" data-v="-5.0350"><b>-5,0%</b></td><td data-v="17.2427">+17,2 p.p.</td></tr><tr data-uf="PA"><th scope="row"><b>PA</b> <span>Pará</span></th><td data-v="2427237">2.427.237</td><td data-v="2690449">2.690.449</td><td data-v="263212">263.212</td><td class="cL" data-v="10.8441"><b>+10,8%</b></td><td data-v="2163957">2.163.957</td><td data-v="2199940">2.199.940</td><td data-v="35983">35.983</td><td class="cF" data-v="1.6628"><b>+1,7%</b></td><td data-v="9.1813">+9,2 p.p.</td></tr><tr data-uf="TO"><th scope="row"><b>TO</b> <span>Tocantins</span></th><td data-v="404009">404.009</td><td data-v="442962">442.962</td><td data-v="38953">38.953</td><td class="cL" data-v="9.6416"><b>+9,6%</b></td><td data-v="469321">469.321</td><td data-v="467916">467.916</td><td data-v="-1405">-1.405</td><td class="cF" data-v="-0.2994"><b>-0,3%</b></td><td data-v="9.9410">+9,9 p.p.</td></tr><tr data-uf="AM"><th scope="row"><b>AM</b> <span>Amazonas</span></th><td data-v="1046996">1.046.996</td><td data-v="1145783">1.145.783</td><td data-v="98787">98.787</td><td class="cL" data-v="9.4353"><b>+9,4%</b></td><td data-v="976764">976.764</td><td data-v="975245">975.245</td><td data-v="-1519">-1.519</td><td class="cF" data-v="-0.1555"><b>-0,2%</b></td><td data-v="9.5908">+9,6 p.p.</td></tr><tr data-uf="MA"><th scope="row"><b>MA</b> <span>Maranhão</span></th><td data-v="2566301">2.566.301</td><td data-v="2808231">2.808.231</td><td data-v="241930">241.930</td><td class="cL" data-v="9.4272"><b>+9,4%</b></td><td data-v="1239040">1.239.040</td><td data-v="1229971">1.229.971</td><td data-v="-9069">-9.069</td><td class="cF" data-v="-0.7319"><b>-0,7%</b></td><td data-v="10.1591">+10,2 p.p.</td></tr><tr data-uf="PI"><th scope="row"><b>PI</b> <span>Piauí</span></th><td data-v="1523710">1.523.710</td><td data-v="1653989">1.653.989</td><td data-v="130279">130.279</td><td class="cL" data-v="8.5501"><b>+8,6%</b></td><td data-v="517028">517.028</td><td data-v="525859">525.859</td><td data-v="8831">8.831</td><td class="cF" data-v="1.7080"><b>+1,7%</b></td><td data-v="6.8421">+6,8 p.p.</td></tr><tr data-uf="AC"><th scope="row"><b>AC</b> <span>Acre</span></th><td data-v="134770">134.770</td><td data-v="144513">144.513</td><td data-v="9743">9.743</td><td class="cL" data-v="7.2294"><b>+7,2%</b></td><td data-v="302807">302.807</td><td data-v="287715">287.715</td><td data-v="-15092">-15.092</td><td class="cF" data-v="-4.9840"><b>-5,0%</b></td><td data-v="12.2134">+12,2 p.p.</td></tr><tr data-uf="AP"><th scope="row"><b>AP</b> <span>Amapá</span></th><td data-v="212503">212.503</td><td data-v="222968">222.968</td><td data-v="10465">10.465</td><td class="cL" data-v="4.9246"><b>+4,9%</b></td><td data-v="212278">212.278</td><td data-v="198674">198.674</td><td data-v="-13604">-13.604</td><td class="cF" data-v="-6.4086"><b>-6,4%</b></td><td data-v="11.3332">+11,3 p.p.</td></tr><tr data-uf="ZZ"><th scope="row"><b>ZZ</b> <span>Exterior</span></th><td data-v="157387">157.387</td><td data-v="200154">200.154</td><td data-v="42767">42.767</td><td class="cL" data-v="27.1731"><b>+27,2%</b></td><td data-v="143900">143.900</td><td data-v="171497">171.497</td><td data-v="27597">27.597</td><td class="cF" data-v="19.1779"><b>+19,2%</b></td><td data-v="7.9952">+8,0 p.p.</td></tr></tbody>
+    <tfoot><tr class="total"><th scope="row"><b>Brasil</b> <span>com exterior</span></th><td>53.879.538</td><td>64.256.232</td><td>10.376.694</td><td class="cL"><b>+19,3%</b></td><td>56.104.503</td><td>59.826.041</td><td>3.721.538</td><td class="cF"><b>+6,6%</b></td><td>+12,6 p.p.</td></tr></tfoot>
+  </table></div>
+</section>
+
+<section class="notas">
+  <div><h3>Como ler a taxa</h3><p>+20% significa que o candidato teve um quinto a mais de votos no 2º turno do que no 1º. É a variação do número de votos, e não da participação no total de votos do estado.</p></div>
+  <div><h3>Por que o ritmo muda</h3><p>No 2º turno restam dois candidatos. O quanto cada um herda dos eliminados, e quanto o comparecimento muda, varia de estado para estado. Estados onde o candidato já tinha muitos votos têm menos espaço para crescer.</p></div>
+  <div><h3>Dados</h3><p>Votação por seção do TSE somada por UF, candidatos 13 (Lula) e 22 (Flávio Nantes Bolsonaro). O exterior aparece como uma linha à parte e entra no total do Brasil.</p></div>
+</section>
+<footer>Fonte: dados abertos do TSE, votação por seção, cargo Presidente. Base local em <code>tse-eleicoes-2026/</code>.</footer>
+</main>
+<script>
+(function () {
+  var tab = document.getElementById("tab"), corpo = tab.tBodies[0], ths = tab.tHead.rows[1].cells, dir = {};
+  function ordenar(i) {
+    var linhas = Array.prototype.slice.call(corpo.rows);
+    dir[i] = !dir[i];
+    linhas.sort(function (a, b) {
+      var x = a.cells[i], y = b.cells[i];
+      var vx = x.dataset.v !== undefined ? parseFloat(x.dataset.v) : x.textContent;
+      var vy = y.dataset.v !== undefined ? parseFloat(y.dataset.v) : y.textContent;
+      var r = typeof vx === "number" ? vx - vy : String(vx).localeCompare(String(vy), "pt-BR");
+      return dir[i] ? r : -r;
+    });
+    linhas.forEach(function (l) { corpo.appendChild(l); });
+  }
+  Array.prototype.forEach.call(ths, function (th, i) { th.addEventListener("click", function () { ordenar(i); }); });
+})();
+</script>
+</body>
+</html>
