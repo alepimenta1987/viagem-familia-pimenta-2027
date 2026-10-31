@@ -33,13 +33,14 @@ h3 { font: 600 11.5px/1.3 var(--sans); text-transform: uppercase; letter-spacing
 .sub, .pag { color: var(--suave); font-size: 12.5px; }
 p { margin: 0; }
 .leg { color: var(--suave); font-size: 12.5px; max-width: 95ch; }
+.ic { color: var(--suave); font-size: 11.5px; } .metodo { font-size: 11.5px; border-top: 1px solid var(--linha); padding-top: 8px; }
 .kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
 .kpi { border: 1px solid var(--linha); background: var(--faixa); border-radius: 8px; padding: 10px 12px; min-width: 0; }
 .kpi .r { display: flex; align-items: center; gap: 6px; font-weight: 600; font-size: 12.5px; }
 .kpi .n { font: 700 28px/1.2 var(--serif); font-variant-numeric: tabular-nums; }
 .kpi .m { color: var(--suave); font-size: 12px; font-variant-numeric: tabular-nums; }
 i.dot, .leg2 i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; }
-.dL { background: var(--L); } .dF { background: var(--F); } .dO { background: var(--O); } .dB { background: var(--B); } .dN { background: var(--N); } .dA { background: var(--A); } .dX { background: var(--tinta); }
+.dX2 { background: repeating-linear-gradient(45deg, var(--suave) 0 2px, transparent 2px 4px); } .dL { background: var(--L); } .dF { background: var(--F); } .dO { background: var(--O); } .dB { background: var(--B); } .dN { background: var(--N); } .dA { background: var(--A); } .dX { background: var(--tinta); }
 .cL { color: var(--L); } .cF { color: var(--F); }
 ul.res { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
 ul.res li { padding-left: 14px; position: relative; max-width: 100ch; }
@@ -54,7 +55,7 @@ svg text { font-family: var(--sans); fill: var(--suave); }
 .sep { stroke: var(--linha); stroke-width: 1; stroke-dasharray: 4 4; }
 .eixo { font-size: 11.5px; font-variant-numeric: tabular-nums; }
 .uf { font-size: 13px; font-weight: 700; fill: var(--tinta); } .peso { font-size: 12px; font-variant-numeric: tabular-nums; }
-.seg.L { fill: var(--L); } .seg.F { fill: var(--F); } .seg.O { fill: var(--O); } .seg.B { fill: var(--B); } .seg.N { fill: var(--N); } .seg.A { fill: var(--A); }
+.seg.X { fill: var(--suave); opacity: .55; } .seg.L { fill: var(--L); } .seg.F { fill: var(--F); } .seg.O { fill: var(--O); } .seg.B { fill: var(--B); } .seg.N { fill: var(--N); } .seg.A { fill: var(--A); }
 svg .segt { font-size: 12.5px; font-weight: 700; fill: var(--papel); font-variant-numeric: tabular-nums; }
 svg .val { font-size: 12.5px; font-weight: 700; fill: var(--tinta); font-variant-numeric: tabular-nums; }
 svg .val2 { font-size: 10.5px; font-weight: 700; font-variant-numeric: tabular-nums; } svg .val2.L { fill: var(--L); } svg .val2.F { fill: var(--F); }
@@ -82,7 +83,7 @@ i.ln { display: inline-block; width: 26px; height: 0; border-top: 2.5px solid va
   main { max-width: none; gap: 0; }
   .folha { border: 0; border-radius: 0; padding: 0; break-after: page; zoom: .72; }
   .folha:last-child { break-after: auto; }
-  .folha:nth-child(1) { zoom: 1; } .folha:nth-child(2) { zoom: .8; } .folha:nth-child(3) { zoom: .88; }
+  .folha:nth-child(1) { zoom: .73; } .folha:nth-child(2) { zoom: .8; } .folha:nth-child(3) { zoom: .88; }
 }
 </style>
 </head>
@@ -105,75 +106,100 @@ i.ln { display: inline-block; width: 26px; height: 0; border-top: 2.5px solid va
     <ul class="res">
       <li><b>Flávio Bolsonaro liderou o 1º turno</b> por 2,22 mi votos e <b>Lula venceu o 2º</b> por 4,43 mi votos, com 51,8% dos votos válidos.</li>
       <li>Lula ganhou 10,38 mi votos entre os turnos (+19,3%) e Flávio ganhou 3,72 mi (+6,6%). Juntos, 14,10 mi votos a mais, o mesmo total das quedas de outros candidatos (9,32 mi no 1º turno), de brancos, de nulos e de abstenção.</li>
+      <li><b>Estimativa:</b> dos 15,7 mi votos que vieram desses reservatórios, cerca de <b>70% foram para Lula</b> e 30% para Flávio. Lula teria captado a maior parte dos votos dos demais candidatos e da abstenção que passou a votar.</li>
       <li>Lula cresceu em <b>5.491 dos 5.571 municípios</b> (98,6%) e Flávio em <b>4.624</b> (83,0%). Lula cresceu mais que Flávio em 27 das 27 UFs.</li>
       <li>O crescimento nacional vem principalmente dos estados grandes: SP, MG, RJ respondem por 45% do ganho de Lula; SP, MG, PR, por 54% do ganho de Flávio.</li>
       <li>Mais gente compareceu e menos votos foram brancos ou nulos: a abstenção caiu de 21,1% para 19,2% do eleitorado, e brancos e nulos caíram juntos de 1,84%+2,93% para 1,12%+2,12% dos comparecidos.</li>
-      <li>Os votos depois das 17h (filas no encerramento) foram 3.724.400 no 1º turno e 34.747 no 2º.</li>
     </ul>
   </div>
 
   <div class="bloco">
-    <h3>Como o eleitorado se dividiu em cada turno</h3>
-    <svg viewBox="0 0 1000 150" role="img" aria-label="Como o eleitorado se dividiu em cada turno">
-<text x="66" y="44.0" class="uf" text-anchor="end">1º turno</text>
-<rect x="78.0" y="22" width="310.9" height="34" class="seg L"><title>Lula: 53.879.538 (33,9% do eleitorado)</title></rect>
-<text x="233.4" y="44.0" class="segt" text-anchor="middle">33,9%</text>
-<rect x="388.9" y="22" width="323.7" height="34" class="seg F"><title>Flávio Bolsonaro: 56.104.503 (35,3% do eleitorado)</title></rect>
-<text x="550.8" y="44.0" class="segt" text-anchor="middle">35,3%</text>
-<rect x="712.6" y="22" width="53.8" height="34" class="seg O"><title>Outros candidatos: 9.321.993 (5,9% do eleitorado)</title></rect>
-<text x="739.5" y="44.0" class="segt" text-anchor="middle">5,9%</text>
-<rect x="766.4" y="22" width="13.3" height="34" class="seg B"><title>Brancos: 2.300.798 (1,4% do eleitorado)</title></rect>
-<rect x="779.7" y="22" width="21.2" height="34" class="seg N"><title>Nulos: 3.669.003 (2,3% do eleitorado)</title></rect>
-<rect x="800.9" y="22" width="193.1" height="34" class="seg A"><title>Abstenção: 33.469.628 (21,1% do eleitorado)</title></rect>
-<text x="897.4" y="44.0" class="segt" text-anchor="middle">21,1%</text>
-<text x="66" y="106.0" class="uf" text-anchor="end">2º turno</text>
-<rect x="78.0" y="84" width="370.8" height="34" class="seg L"><title>Lula: 64.256.232 (40,5% do eleitorado)</title></rect>
-<text x="263.4" y="106.0" class="segt" text-anchor="middle">40,5%</text>
-<rect x="448.8" y="84" width="345.2" height="34" class="seg F"><title>Flávio Bolsonaro: 59.826.041 (37,7% do eleitorado)</title></rect>
-<text x="621.4" y="106.0" class="segt" text-anchor="middle">37,7%</text>
-<rect x="794.0" y="84" width="8.3" height="34" class="seg B"><title>Brancos: 1.430.496 (0,9% do eleitorado)</title></rect>
-<rect x="802.2" y="84" width="15.7" height="34" class="seg N"><title>Nulos: 2.723.305 (1,7% do eleitorado)</title></rect>
-<rect x="818.0" y="84" width="176.0" height="34" class="seg A"><title>Abstenção: 30.509.389 (19,2% do eleitorado)</title></rect>
-<text x="906.0" y="106.0" class="segt" text-anchor="middle">19,2%</text>
-<text x="78" y="144" class="eixo">cada barra é o eleitorado apto inteiro (158.745.463 eleitores, 100%)</text>
+    <h3>Balanço exato: variação de votos por categoria entre os turnos</h3>
+    <svg viewBox="0 0 1000 170" role="img" aria-label="Variação de votos por categoria do 1º para o 2º turno">
+<line x1="181.7" x2="181.7" y1="6" y2="146" class="grade"/>
+<text x="181.7" y="162" class="eixo" text-anchor="middle">-10 mi</text>
+<line x1="340.4" x2="340.4" y1="6" y2="146" class="grade"/>
+<text x="340.4" y="162" class="eixo" text-anchor="middle">-5 mi</text>
+<line x1="499.1" x2="499.1" y1="6" y2="146" class="zero"/>
+<text x="499.1" y="162" class="eixo" text-anchor="middle">0</text>
+<line x1="657.8" x2="657.8" y1="6" y2="146" class="grade"/>
+<text x="657.8" y="162" class="eixo" text-anchor="middle">+5 mi</text>
+<line x1="816.5" x2="816.5" y1="6" y2="146" class="grade"/>
+<text x="816.5" y="162" class="eixo" text-anchor="middle">+10 mi</text>
+<text x="140" y="27.0" class="uf" text-anchor="end">Lula</text>
+<rect x="499.1" y="16" width="329.3" height="14" rx="2" class="seg L"/>
+<text x="835.5" y="27.0" class="val" text-anchor="start">+10,38 mi</text>
+<text x="140" y="49.0" class="uf" text-anchor="end">Flávio Bolsonaro</text>
+<rect x="499.1" y="38" width="118.1" height="14" rx="2" class="seg F"/>
+<text x="624.2" y="49.0" class="val" text-anchor="start">+3,72 mi</text>
+<text x="140" y="71.0" class="uf" text-anchor="end">Outros candidatos</text>
+<rect x="203.3" y="60" width="295.9" height="14" rx="2" class="seg O"/>
+<text x="196.3" y="71.0" class="val" text-anchor="end">−9,32 mi</text>
+<text x="140" y="93.0" class="uf" text-anchor="end">Brancos</text>
+<rect x="471.5" y="82" width="27.6" height="14" rx="2" class="seg B"/>
+<text x="464.5" y="93.0" class="val" text-anchor="end">−0,87 mi</text>
+<text x="140" y="115.0" class="uf" text-anchor="end">Nulos</text>
+<rect x="469.1" y="104" width="30.0" height="14" rx="2" class="seg N"/>
+<text x="462.1" y="115.0" class="val" text-anchor="end">−0,95 mi</text>
+<text x="140" y="137.0" class="uf" text-anchor="end">Abstenção</text>
+<rect x="405.2" y="126" width="94.0" height="14" rx="2" class="seg A"/>
+<text x="398.2" y="137.0" class="val" text-anchor="end">−2,96 mi</text>
 </svg>
-    <div class="leg2"><span><i class="dL"></i>Lula</span><span><i class="dF"></i>Flávio Bolsonaro</span><span><i class="dO"></i>Outros candidatos</span><span><i class="dB"></i>Brancos</span><span><i class="dN"></i>Nulos</span><span><i class="dA"></i>Abstenção</span></div>
+    <p class="leg">Contabilidade, sem estimativa. Como o número de eleitores aptos é o mesmo nos dois turnos, o que uma categoria ganha é igual ao que as outras perdem: Lula e Flávio ganharam 14,10 mi votos; essa soma é igual às quedas de outros candidatos, brancos, nulos e abstenção.</p>
   </div>
 
   <div class="bloco">
-    <h3>Para onde foi a diferença: variação de votos por categoria</h3>
-    <svg viewBox="0 0 1000 194" role="img" aria-label="Variação de votos por categoria do 1º para o 2º turno">
-<line x1="181.7" x2="181.7" y1="6" y2="170" class="grade"/>
-<text x="181.7" y="186" class="eixo" text-anchor="middle">-10 mi</text>
-<line x1="340.4" x2="340.4" y1="6" y2="170" class="grade"/>
-<text x="340.4" y="186" class="eixo" text-anchor="middle">-5 mi</text>
-<line x1="499.1" x2="499.1" y1="6" y2="170" class="zero"/>
-<text x="499.1" y="186" class="eixo" text-anchor="middle">0</text>
-<line x1="657.8" x2="657.8" y1="6" y2="170" class="grade"/>
-<text x="657.8" y="186" class="eixo" text-anchor="middle">+5 mi</text>
-<line x1="816.5" x2="816.5" y1="6" y2="170" class="grade"/>
-<text x="816.5" y="186" class="eixo" text-anchor="middle">+10 mi</text>
-<text x="140" y="29.0" class="uf" text-anchor="end">Lula</text>
-<rect x="499.1" y="16" width="329.3" height="18" rx="2" class="seg L"/>
-<text x="835.5" y="29.0" class="val" text-anchor="start">+10,38 mi</text>
-<text x="140" y="55.0" class="uf" text-anchor="end">Flávio Bolsonaro</text>
-<rect x="499.1" y="42" width="118.1" height="18" rx="2" class="seg F"/>
-<text x="624.2" y="55.0" class="val" text-anchor="start">+3,72 mi</text>
-<text x="140" y="81.0" class="uf" text-anchor="end">Outros candidatos</text>
-<rect x="203.3" y="68" width="295.9" height="18" rx="2" class="seg O"/>
-<text x="196.3" y="81.0" class="val" text-anchor="end">−9,32 mi</text>
-<text x="140" y="107.0" class="uf" text-anchor="end">Brancos</text>
-<rect x="471.5" y="94" width="27.6" height="18" rx="2" class="seg B"/>
-<text x="464.5" y="107.0" class="val" text-anchor="end">−0,87 mi</text>
-<text x="140" y="133.0" class="uf" text-anchor="end">Nulos</text>
-<rect x="469.1" y="120" width="30.0" height="18" rx="2" class="seg N"/>
-<text x="462.1" y="133.0" class="val" text-anchor="end">−0,95 mi</text>
-<text x="140" y="159.0" class="uf" text-anchor="end">Abstenção</text>
-<rect x="405.2" y="146" width="94.0" height="18" rx="2" class="seg A"/>
-<text x="398.2" y="159.0" class="val" text-anchor="end">−2,96 mi</text>
-</svg>
-    <p class="leg">Balanço líquido entre os dois turnos. Não mostra como cada eleitor mudou de voto, só quanto cada categoria ganhou ou perdeu. Como o número de eleitores aptos é o mesmo, o que uns ganham é igual ao que outros perdem.</p>
+    <h3>De onde vieram os votos adicionais de cada finalista (estimativa)</h3>
+    <svg viewBox="0 0 1000 118" role="img" aria-label="Origem dos votos de cada finalista no 2º turno (estimativa)">
+<text x="118" y="30.0" class="uf" text-anchor="end">Lula</text>
+<rect x="130.0" y="10" width="709.4" height="30" class="seg L"><title>own: 52.755.195 votos</title></rect>
+<text x="484.7" y="30.0" class="segt" text-anchor="middle">52,76 mi · 82%</text>
+<rect x="839.4" y="10" width="114.9" height="30" class="seg O"><title>O: 8.546.940 votos</title></rect>
+<text x="896.8" y="30.0" class="segt" text-anchor="middle">8,55 mi · 13%</text>
+<rect x="954.3" y="10" width="33.9" height="30" class="seg A"><title>A: 2.524.204 votos</title></rect>
+<text x="971.2" y="30.0" class="segt" text-anchor="middle">4%</text>
+<rect x="988.2" y="10" width="5.7" height="30" class="seg X"><title>X: 421.072 votos</title></rect>
+<text x="118" y="72.0" class="uf" text-anchor="end">Flávio</text>
+<rect x="130.0" y="52" width="793.0" height="30" class="seg F"><title>own: 54.910.377 votos</title></rect>
+<text x="526.5" y="72.0" class="segt" text-anchor="middle">54,91 mi · 92%</text>
+<rect x="923.0" y="52" width="49.0" height="30" class="seg O"><title>O: 3.393.313 votos</title></rect>
+<text x="947.5" y="72.0" class="segt" text-anchor="middle">6%</text>
+<rect x="972.0" y="52" width="17.9" height="30" class="seg A"><title>A: 1.241.152 votos</title></rect>
+<rect x="989.9" y="52" width="4.3" height="30" class="seg X"><title>X: 299.525 votos</title></rect>
+<text x="130" y="104" class="eixo">cada barra = votos do candidato no 2º turno (100%); segmentos estimados por modelo, ver método</text></svg>
+    <div class="leg2"><span><i class="dot dL"></i>mesmo candidato</span><span><i class="dot dO"></i>outros, brancos e nulos</span><span><i class="dot dA"></i>abstenção</span><span><i class="dot dX2"></i>outro finalista</span></div>
+    <table class="tabelinha" style="margin-top:8px">
+      <thead><tr><th>Votos a mais vindos de… (milhões; intervalo de 95%)</th><th class="cL">Lula</th><th class="cF">Flávio</th></tr></thead>
+      <tbody><tr><td>De outros candidatos, brancos e nulos</td><td class="cL"><b>8,55</b> <span class="ic">(8,11–8,90)</span></td><td class="cF"><b>3,39</b> <span class="ic">(3,09–3,65)</span></td></tr><tr><td>Da abstenção</td><td class="cL"><b>2,52</b> <span class="ic">(2,13–2,88)</span></td><td class="cF"><b>1,24</b> <span class="ic">(0,84–1,45)</span></td></tr></tbody>
+    </table>
   </div>
+
+  <div class="bloco">
+    <h3>Para onde foram os votos dos outros candidatos, brancos, nulos e abstenção (estimativa)</h3>
+    <svg viewBox="0 0 1000 118" role="img" aria-label="Destino dos votos de cada reserva do 1º turno (estimativa)">
+<text x="118" y="23.0" class="uf" text-anchor="end">Outros +</text>
+<text x="118" y="38.0" class="uf" text-anchor="end">brancos e nulos</text>
+<rect x="130.0" y="10" width="482.9" height="30" class="seg L"><title>Lula: 8.546.940 votos (55,9% da reserva)</title></rect>
+<text x="371.5" y="30.0" class="segt" text-anchor="middle">55,9% · 8,55 mi</text>
+<rect x="612.9" y="10" width="191.7" height="30" class="seg F"><title>Flávio Bolsonaro: 3.393.313 votos (22,2% da reserva)</title></rect>
+<text x="708.8" y="30.0" class="segt" text-anchor="middle">22,2% · 3,39 mi</text>
+<rect x="804.6" y="10" width="178.4" height="30" class="seg N"><title>branco ou nulo: 3.158.276 votos (20,7% da reserva)</title></rect>
+<text x="893.9" y="30.0" class="segt" text-anchor="middle">20,7% · 3,16 mi</text>
+<rect x="983.1" y="10" width="10.9" height="30" class="seg A"><title>abstenção: 193.265 votos (1,3% da reserva)</title></rect>
+<text x="118" y="65.0" class="uf" text-anchor="end">Abstenção</text>
+<rect x="130.0" y="52" width="65.2" height="30" class="seg L"><title>Lula: 2.524.204 votos (7,5% da reserva)</title></rect>
+<text x="162.6" y="72.0" class="segt" text-anchor="middle">7,5%</text>
+<rect x="195.2" y="52" width="32.0" height="30" class="seg F"><title>Flávio Bolsonaro: 1.241.152 votos (3,7% da reserva)</title></rect>
+<text x="211.2" y="72.0" class="segt" text-anchor="middle">3,7%</text>
+<rect x="227.2" y="52" width="19.8" height="30" class="seg N"><title>branco ou nulo: 767.107 votos (2,3% da reserva)</title></rect>
+<rect x="247.0" y="52" width="747.0" height="30" class="seg A"><title>abstenção: 28.936.667 votos (86,5% da reserva)</title></rect>
+<text x="620.5" y="72.0" class="segt" text-anchor="middle">86,5% · 28,94 mi</text>
+<text x="130" y="104" class="eixo">cada barra = a reserva inteira no 1º turno (100%): outros+brancos+nulos 15,29 mi; abstenção 33,47 mi</text></svg>
+    <div class="leg2"><span><i class="dot dL"></i>Lula</span><span><i class="dot dF"></i>Flávio Bolsonaro</span><span><i class="dot dN"></i>branco ou nulo</span><span><i class="dot dA"></i>abstenção</span></div>
+    <p class="leg" style="margin-top:6px"><b>Leitura:</b> dos 15,7 mi votos que saíram desses dois reservatórios e foram para um dos finalistas, Lula ficou com 11,1 mi (70%) e Flávio com 4,6 mi (30%). O grupo “outros candidatos, brancos e nulos” (15,29 mi) migrou principalmente para os dois finalistas (56% para Lula, 22% para Flávio). Da abstenção (33,47 mi), 86% continuou sem votar, 8% foi para Lula e 3,7% para Flávio.</p>
+  </div>
+
+  <p class="leg metodo"><b>Método.</b> Inferência ecológica: regressão linear com restrição, estimada separadamente em cada UF, sobre 5.716 municípios e zonas do exterior. A participação de cada resultado do 2º turno no eleitorado do município é explicada pela participação de cada categoria no 1º turno, e cada linha da matriz de transição é limitada a ser positiva e somar 100%. O ajuste explica 99,2% da variação, e os intervalos de 95% vêm de 300 reamostragens (bootstrap) e refletem só a variação entre municípios; a incerteza do próprio modelo é maior. Um modelo único para o país dá resultado parecido (73% dos votos captados para Lula). É uma estimativa estatística sobre dados agregados: não mostra o voto de nenhum eleitor, e a separação entre brancos, nulos e outros candidatos não é identificável, por isso aparecem juntos.</p>
 </article>
 
 <!-- ============ FOLHA 2 ============ -->

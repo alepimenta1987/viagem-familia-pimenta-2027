@@ -71,5 +71,9 @@ WHERE v.hora + f.offset_h >= 17
 GROUP BY v.turno;
 ```
 
+`modelo_transferencias.py` estima, por inferência ecológica (regressão restrita por UF, com bootstrap),
+de onde vieram os votos adicionais de cada finalista no 2º turno (requer numpy e o perfil do eleitorado
+`perfil_eleitorado_2026.zip` do TSE). É uma estimativa sobre dados agregados, não o voto individual.
+
 `test_pipeline.py` roda o fluxo inteiro com arquivos sintéticos no formato do TSE
 (`python -m unittest test_pipeline.py`).
