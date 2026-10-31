@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Variação de abstenções, brancos e nulos — Presidente 2018–2026</title>
+<style>
+/* Layout: gráfico de colunas pareadas (1º e 2º turno) em quatro painéis, tabela com os valores embaixo. */
+:root { --bg:#eef1f5; --papel:#fff; --tinta:#16202e; --suave:#5a6677; --linha:#d9dfe8; --faixa:#f6f8fb;
+  --X:#16202e; --A:#b7791f; --B:#0f8a7a; --N:#7a52b3; --neg:#0f8a7a; --pos:#b7791f;
+  --serif: Charter,"Iowan Old Style","Palatino Linotype",Georgia,serif; --sans: system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#0b1017; --papel:#171f2b; --tinta:#e8edf4; --suave:#9aa6b8; --linha:#2a3545; --faixa:#1b2433;
+  --X:#e8edf4; --A:#f0b84a; --B:#43c9b6; --N:#b79cf0; --neg:#43c9b6; --pos:#f0b84a; color-scheme: dark; } }
+:root[data-theme="dark"] { --bg:#0b1017; --papel:#171f2b; --tinta:#e8edf4; --suave:#9aa6b8; --linha:#2a3545; --faixa:#1b2433;
+  --X:#e8edf4; --A:#f0b84a; --B:#43c9b6; --N:#b79cf0; --neg:#43c9b6; --pos:#f0b84a; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--tinta); font:14px/1.5 var(--sans); padding:24px max(16px, env(safe-area-inset-right,0px)) 24px max(16px, env(safe-area-inset-left,0px)); }
+main { max-width:1040px; margin:0 auto; background:var(--papel); border:1px solid var(--linha); border-radius:12px; padding:24px 26px; display:grid; grid-template-columns:minmax(0,1fr); gap:16px; min-width:0; }
+h1 { font:700 24px/1.25 var(--serif); margin:0; text-wrap:balance; } h3 { font:600 11.5px/1.3 var(--sans); text-transform:uppercase; letter-spacing:.08em; color:var(--suave); margin:0 0 6px; }
+.sub { color:var(--suave); font-size:13px; } .leg { color:var(--suave); font-size:12.5px; max-width:95ch; margin:0; }
+.cab { border-bottom:2px solid var(--tinta); padding-bottom:8px; display:grid; gap:2px; }
+.graf { overflow-x:auto; } .graf svg { min-width:760px; width:100%; height:auto; display:block; }
+svg text { font-family:var(--sans); fill:var(--suave); } .ptit { font-size:13.5px; font-weight:700; fill:var(--tinta); } .eixo { font-size:11px; font-variant-numeric:tabular-nums; }
+.grade { stroke:var(--linha); stroke-width:1; } svg .val { font-size:11px; font-weight:700; fill:var(--tinta); font-variant-numeric:tabular-nums; } svg .ano { font-size:12.5px; font-weight:700; fill:var(--tinta); }
+svg .delta { font-size:12px; font-weight:700; font-variant-numeric:tabular-nums; } svg .delta.neg { fill:var(--neg); } svg .delta.pos { fill:var(--pos); }
+.barra.X { fill:var(--X); } .barra.A { fill:var(--A); } .barra.B { fill:var(--B); } .barra.N { fill:var(--N); } .barra.t1 { opacity:.38; }
+.leg2 { display:flex; gap:16px; flex-wrap:wrap; font-size:12px; color:var(--suave); } .leg2 span { display:inline-flex; align-items:center; gap:6px; }
+.leg2 i { display:inline-block; width:12px; height:12px; border-radius:2px; background:var(--tinta); } .leg2 i.c1 { opacity:.38; }
+.tab { overflow-x:auto; } table { width:100%; border-collapse:collapse; font-size:12.5px; font-variant-numeric:tabular-nums; }
+th,td { padding:4px 8px; text-align:right; border-bottom:1px solid var(--linha); white-space:nowrap; } th:nth-child(2),td:nth-child(2) { text-align:left; } th:first-child,td:first-child { text-align:left; font-weight:600; }
+thead th { font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--suave); font-weight:600; } tbody tr:nth-child(8n+1) td, tbody tr:nth-child(8n+2) td,tbody tr:nth-child(8n+3) td,tbody tr:nth-child(8n+4) td { background:var(--faixa); }
+td.neg { color:var(--neg); } td.pos { color:var(--pos); }
+</style>
+</head>
+<body>
+<main>
+  <div class="cab"><h1>Abstenções, brancos e nulos: variação do 1º para o 2º turno</h1>
+  <div class="sub">Eleições presidenciais 2018, 2022, 2026 · % dos eleitores aptos · dados abertos do TSE</div></div>
+  <div class="graf"><svg viewBox="0 0 1000 330" role="img" aria-label="Variação de abstenção, brancos e nulos do 1º para o 2º turno em cada eleição presidencial">
+<text x="40" y="20" class="ptit">Abstenção + brancos + nulos</text><text x="40" y="36" class="eixo">% dos eleitores aptos</text>
+<line x1="40" x2="232" y1="290.0" y2="290.0" class="grade"/><text x="34" y="294.0" class="eixo" text-anchor="end">0%</text>
+<line x1="40" x2="232" y1="231.5" y2="231.5" class="grade"/><text x="34" y="235.5" class="eixo" text-anchor="end">8%</text>
+<line x1="40" x2="232" y1="173.0" y2="173.0" class="grade"/><text x="34" y="177.0" class="eixo" text-anchor="end">16%</text>
+<line x1="40" x2="232" y1="114.5" y2="114.5" class="grade"/><text x="34" y="118.5" class="eixo" text-anchor="end">24%</text>
+<line x1="40" x2="232" y1="56.0" y2="56.0" class="grade"/><text x="34" y="60.0" class="eixo" text-anchor="end">32%</text>
+<rect x="47.7" y="90.2" width="23.0" height="199.8" rx="2" class="barra X t1"><title>2018. 1º turno: 27.33% dos aptos (40.254.330 eleitores)</title></rect>
+<text x="59.2" y="85.2" class="val" text-anchor="middle">27,3</text>
+<rect x="73.7" y="79.2" width="23.0" height="210.8" rx="2" class="barra X t2"><title>2018. 2º turno: 28.83% dos aptos (42.467.071 eleitores)</title></rect>
+<text x="85.2" y="74.2" class="val" text-anchor="middle">28,8</text>
+<text x="72.2" y="324" class="delta pos" text-anchor="middle">+1,50</text>
+<text x="72.2" y="306" class="ano" text-anchor="middle">2018</text>
+<rect x="111.7" y="111.3" width="23.0" height="178.7" rx="2" class="barra X t1"><title>2022. 1º turno: 24.43% dos aptos (38.223.635 eleitores)</title></rect>
+<text x="123.2" y="106.3" class="val" text-anchor="middle">24,4</text>
+<rect x="137.7" y="112.9" width="23.0" height="177.1" rx="2" class="barra X t2"><title>2022. 2º turno: 24.23% dos aptos (37.901.001 eleitores)</title></rect>
+<text x="149.2" y="107.9" class="val" text-anchor="middle">24,2</text>
+<text x="136.2" y="324" class="delta neg" text-anchor="middle">-0,21</text>
+<text x="136.2" y="306" class="ano" text-anchor="middle">2022</text>
+<rect x="175.7" y="108.3" width="23.0" height="181.7" rx="2" class="barra X t1"><title>2026. 1º turno: 24.84% dos aptos (39.439.429 eleitores)</title></rect>
+<text x="187.2" y="103.3" class="val" text-anchor="middle">24,8</text>
+<rect x="201.7" y="130.3" width="23.0" height="159.7" rx="2" class="barra X t2"><title>2026. 2º turno: 21.84% dos aptos (34.663.190 eleitores)</title></rect>
+<text x="213.2" y="125.3" class="val" text-anchor="middle">21,8</text>
+<text x="200.2" y="324" class="delta neg" text-anchor="middle">-3,01</text>
+<text x="200.2" y="306" class="ano" text-anchor="middle">2026</text>
+<text x="284" y="20" class="ptit">Abstenção</text><text x="284" y="36" class="eixo">% dos eleitores aptos</text>
+<line x1="284" x2="476" y1="290.0" y2="290.0" class="grade"/><text x="278" y="294.0" class="eixo" text-anchor="end">0%</text>
+<line x1="284" x2="476" y1="243.2" y2="243.2" class="grade"/><text x="278" y="247.2" class="eixo" text-anchor="end">5%</text>
+<line x1="284" x2="476" y1="196.4" y2="196.4" class="grade"/><text x="278" y="200.4" class="eixo" text-anchor="end">10%</text>
+<line x1="284" x2="476" y1="149.6" y2="149.6" class="grade"/><text x="278" y="153.6" class="eixo" text-anchor="end">15%</text>
+<line x1="284" x2="476" y1="102.8" y2="102.8" class="grade"/><text x="278" y="106.8" class="eixo" text-anchor="end">20%</text>
+<line x1="284" x2="476" y1="56.0" y2="56.0" class="grade"/><text x="278" y="60.0" class="eixo" text-anchor="end">25%</text>
+<rect x="291.7" y="99.8" width="23.0" height="190.2" rx="2" class="barra A t1"><title>2018. 1º turno: 20.33% dos aptos (29.941.171 eleitores)</title></rect>
+<text x="303.2" y="94.8" class="val" text-anchor="middle">20,3</text>
+<rect x="317.7" y="90.7" width="23.0" height="199.3" rx="2" class="barra A t2"><title>2018. 2º turno: 21.30% dos aptos (31.372.373 eleitores)</title></rect>
+<text x="329.2" y="85.7" class="val" text-anchor="middle">21,3</text>
+<text x="316.2" y="324" class="delta pos" text-anchor="middle">+0,97</text>
+<text x="316.2" y="306" class="ano" text-anchor="middle">2018</text>
+<rect x="355.7" y="93.9" width="23.0" height="196.1" rx="2" class="barra A t1"><title>2022. 1º turno: 20.95% dos aptos (32.770.982 eleitores)</title></rect>
+<text x="367.2" y="88.9" class="val" text-anchor="middle">20,9</text>
+<rect x="381.7" y="97.4" width="23.0" height="192.6" rx="2" class="barra A t2"><title>2022. 2º turno: 20.58% dos aptos (32.200.558 eleitores)</title></rect>
+<text x="393.2" y="92.4" class="val" text-anchor="middle">20,6</text>
+<text x="380.2" y="324" class="delta neg" text-anchor="middle">-0,36</text>
+<text x="380.2" y="306" class="ano" text-anchor="middle">2022</text>
+<rect x="419.7" y="92.7" width="23.0" height="197.3" rx="2" class="barra A t1"><title>2026. 1º turno: 21.08% dos aptos (33.469.628 eleitores)</title></rect>
+<text x="431.2" y="87.7" class="val" text-anchor="middle">21,1</text>
+<rect x="445.7" y="110.1" width="23.0" height="179.9" rx="2" class="barra A t2"><title>2026. 2º turno: 19.22% dos aptos (30.509.389 eleitores)</title></rect>
+<text x="457.2" y="105.1" class="val" text-anchor="middle">19,2</text>
+<text x="444.2" y="324" class="delta neg" text-anchor="middle">-1,86</text>
+<text x="444.2" y="306" class="ano" text-anchor="middle">2026</text>
+<text x="528" y="20" class="ptit">Brancos</text><text x="528" y="36" class="eixo">% dos eleitores aptos</text>
+<line x1="528" x2="720" y1="290.0" y2="290.0" class="grade"/><text x="522" y="294.0" class="eixo" text-anchor="end">0%</text>
+<line x1="528" x2="720" y1="212.0" y2="212.0" class="grade"/><text x="522" y="216.0" class="eixo" text-anchor="end">1%</text>
+<line x1="528" x2="720" y1="134.0" y2="134.0" class="grade"/><text x="522" y="138.0" class="eixo" text-anchor="end">2%</text>
+<line x1="528" x2="720" y1="56.0" y2="56.0" class="grade"/><text x="522" y="60.0" class="eixo" text-anchor="end">3%</text>
+<rect x="535.7" y="125.5" width="23.0" height="164.5" rx="2" class="barra B t1"><title>2018. 1º turno: 2.11% dos aptos (3.106.937 eleitores)</title></rect>
+<text x="547.2" y="120.5" class="val" text-anchor="middle">2,1</text>
+<rect x="561.7" y="158.3" width="23.0" height="131.7" rx="2" class="barra B t2"><title>2018. 2º turno: 1.69% dos aptos (2.486.593 eleitores)</title></rect>
+<text x="573.2" y="153.3" class="val" text-anchor="middle">1,7</text>
+<text x="560.2" y="324" class="delta neg" text-anchor="middle">-0,42</text>
+<text x="560.2" y="306" class="ano" text-anchor="middle">2018</text>
+<rect x="599.7" y="192.0" width="23.0" height="98.0" rx="2" class="barra B t1"><title>2022. 1º turno: 1.26% dos aptos (1.964.779 eleitores)</title></rect>
+<text x="611.2" y="187.0" class="val" text-anchor="middle">1,3</text>
+<rect x="625.7" y="201.8" width="23.0" height="88.2" rx="2" class="barra B t2"><title>2022. 2º turno: 1.13% dos aptos (1.769.678 eleitores)</title></rect>
+<text x="637.2" y="196.8" class="val" text-anchor="middle">1,1</text>
+<text x="624.2" y="324" class="delta neg" text-anchor="middle">-0,12</text>
+<text x="624.2" y="306" class="ano" text-anchor="middle">2022</text>
+<rect x="663.7" y="176.9" width="23.0" height="113.1" rx="2" class="barra B t1"><title>2026. 1º turno: 1.45% dos aptos (2.300.798 eleitores)</title></rect>
+<text x="675.2" y="171.9" class="val" text-anchor="middle">1,4</text>
+<rect x="689.7" y="219.7" width="23.0" height="70.3" rx="2" class="barra B t2"><title>2026. 2º turno: 0.90% dos aptos (1.430.496 eleitores)</title></rect>
+<text x="701.2" y="214.7" class="val" text-anchor="middle">0,9</text>
+<text x="688.2" y="324" class="delta neg" text-anchor="middle">-0,55</text>
+<text x="688.2" y="306" class="ano" text-anchor="middle">2026</text>
+<text x="772" y="20" class="ptit">Nulos</text><text x="772" y="36" class="eixo">% dos eleitores aptos</text>
+<line x1="772" x2="964" y1="290.0" y2="290.0" class="grade"/><text x="766" y="294.0" class="eixo" text-anchor="end">0%</text>
+<line x1="772" x2="964" y1="212.0" y2="212.0" class="grade"/><text x="766" y="216.0" class="eixo" text-anchor="end">2%</text>
+<line x1="772" x2="964" y1="134.0" y2="134.0" class="grade"/><text x="766" y="138.0" class="eixo" text-anchor="end">4%</text>
+<line x1="772" x2="964" y1="56.0" y2="56.0" class="grade"/><text x="766" y="60.0" class="eixo" text-anchor="end">6%</text>
+<rect x="779.7" y="99.2" width="23.0" height="190.8" rx="2" class="barra N t1"><title>2018. 1º turno: 4.89% dos aptos (7.206.222 eleitores)</title></rect>
+<text x="791.2" y="94.2" class="val" text-anchor="middle">4,9</text>
+<rect x="805.7" y="62.1" width="23.0" height="227.9" rx="2" class="barra N t2"><title>2018. 2º turno: 5.84% dos aptos (8.608.105 eleitores)</title></rect>
+<text x="817.2" y="57.1" class="val" text-anchor="middle">5,8</text>
+<text x="804.2" y="324" class="delta pos" text-anchor="middle">+0,95</text>
+<text x="804.2" y="306" class="ano" text-anchor="middle">2018</text>
+<rect x="843.7" y="203.1" width="23.0" height="86.9" rx="2" class="barra N t1"><title>2022. 1º turno: 2.23% dos aptos (3.487.874 eleitores)</title></rect>
+<text x="855.2" y="198.1" class="val" text-anchor="middle">2,2</text>
+<rect x="869.7" y="192.0" width="23.0" height="98.0" rx="2" class="barra N t2"><title>2022. 2º turno: 2.51% dos aptos (3.930.765 eleitores)</title></rect>
+<text x="881.2" y="187.0" class="val" text-anchor="middle">2,5</text>
+<text x="868.2" y="324" class="delta pos" text-anchor="middle">+0,28</text>
+<text x="868.2" y="306" class="ano" text-anchor="middle">2022</text>
+<rect x="907.7" y="199.9" width="23.0" height="90.1" rx="2" class="barra N t1"><title>2026. 1º turno: 2.31% dos aptos (3.669.003 eleitores)</title></rect>
+<text x="919.2" y="194.9" class="val" text-anchor="middle">2,3</text>
+<rect x="933.7" y="223.1" width="23.0" height="66.9" rx="2" class="barra N t2"><title>2026. 2º turno: 1.72% dos aptos (2.723.305 eleitores)</title></rect>
+<text x="945.2" y="218.1" class="val" text-anchor="middle">1,7</text>
+<text x="932.2" y="324" class="delta neg" text-anchor="middle">-0,60</text>
+<text x="932.2" y="306" class="ano" text-anchor="middle">2026</text>
+</svg></div>
+  <div class="leg2"><span><i class="c1"></i>1º turno</span><span><i></i>2º turno</span><span style="color:var(--neg)">&#9632; redução entre os turnos</span><span style="color:var(--pos)">&#9632; aumento entre os turnos</span></div>
+  <div><h3>Valores</h3><div class="tab"><table>
+    <thead><tr><th>Ano</th><th>Medida</th><th>1º turno</th><th>2º turno</th><th>1º (% aptos)</th><th>2º (% aptos)</th><th>Variação</th><th>Variação relativa</th></tr></thead>
+    <tbody><tr><td>2018</td><td>Abstenção + brancos + nulos</td><td>40,25 mi</td><td>42,47 mi</td><td>27,33%</td><td>28,83%</td><td class="pos"><b>+1,50 p.p.</b></td><td class="pos">+5,5%</td></tr><tr><td>2018</td><td>Abstenção</td><td>29,94 mi</td><td>31,37 mi</td><td>20,33%</td><td>21,30%</td><td class="pos"><b>+0,97 p.p.</b></td><td class="pos">+4,8%</td></tr><tr><td>2018</td><td>Brancos</td><td>3,11 mi</td><td>2,49 mi</td><td>2,11%</td><td>1,69%</td><td class="neg"><b>-0,42 p.p.</b></td><td class="neg">-20,0%</td></tr><tr><td>2018</td><td>Nulos</td><td>7,21 mi</td><td>8,61 mi</td><td>4,89%</td><td>5,84%</td><td class="pos"><b>+0,95 p.p.</b></td><td class="pos">+19,5%</td></tr><tr><td>2022</td><td>Abstenção + brancos + nulos</td><td>38,22 mi</td><td>37,90 mi</td><td>24,43%</td><td>24,23%</td><td class="neg"><b>-0,21 p.p.</b></td><td class="neg">-0,8%</td></tr><tr><td>2022</td><td>Abstenção</td><td>32,77 mi</td><td>32,20 mi</td><td>20,95%</td><td>20,58%</td><td class="neg"><b>-0,36 p.p.</b></td><td class="neg">-1,7%</td></tr><tr><td>2022</td><td>Brancos</td><td>1,96 mi</td><td>1,77 mi</td><td>1,26%</td><td>1,13%</td><td class="neg"><b>-0,12 p.p.</b></td><td class="neg">-9,9%</td></tr><tr><td>2022</td><td>Nulos</td><td>3,49 mi</td><td>3,93 mi</td><td>2,23%</td><td>2,51%</td><td class="pos"><b>+0,28 p.p.</b></td><td class="pos">+12,7%</td></tr><tr><td>2026</td><td>Abstenção + brancos + nulos</td><td>39,44 mi</td><td>34,66 mi</td><td>24,84%</td><td>21,84%</td><td class="neg"><b>-3,01 p.p.</b></td><td class="neg">-12,1%</td></tr><tr><td>2026</td><td>Abstenção</td><td>33,47 mi</td><td>30,51 mi</td><td>21,08%</td><td>19,22%</td><td class="neg"><b>-1,86 p.p.</b></td><td class="neg">-8,8%</td></tr><tr><td>2026</td><td>Brancos</td><td>2,30 mi</td><td>1,43 mi</td><td>1,45%</td><td>0,90%</td><td class="neg"><b>-0,55 p.p.</b></td><td class="neg">-37,8%</td></tr><tr><td>2026</td><td>Nulos</td><td>3,67 mi</td><td>2,72 mi</td><td>2,31%</td><td>1,72%</td><td class="neg"><b>-0,60 p.p.</b></td><td class="neg">-25,8%</td></tr></tbody></table></div></div>
+  <p class="leg">Janela de 10 anos (de 2016 a 2026): as três eleições presidenciais do período, todas com 2º turno. Abstenção = aptos menos comparecidos. Os aptos de 2026 vêm do perfil do eleitorado de julho de 2026; os de 2018 e 2022 vêm do TSE no dia da eleição. Para uma janela maior, use <code>--desde 2002</code>.</p>
+</main>
+</body>
+</html>
