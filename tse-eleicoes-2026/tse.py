@@ -16,12 +16,14 @@ import os
 import re
 import sqlite3
 import statistics
+import struct
 import sys
 import time
 import urllib.request
 import zipfile
+import zlib
 from collections import Counter, defaultdict, deque
-from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 from datetime import datetime
 from pathlib import Path
 
@@ -77,6 +79,83 @@ def baixar(url, destino, tentativas=5):
             print(f"\n  falha ao baixar {url}: {e}; nova tentativa em {espera}s", file=sys.stderr)
             time.sleep(espera)
     raise RuntimeError(f"não foi possível baixar {url}")
+
+
+def http_range(url, inicio, fim, tentativas=6):
+    """Baixa os bytes [inicio, fim] (inclusive) de url."""
+    for tentativa in range(tentativas):
+        req = urllib.request.Request(url, headers={"User-Agent": "tse-analise/1.0",
+                                                   "Range": f"bytes={inicio}-{fim}"})
+        try:
+            with urllib.request.urlopen(req, timeout=120) as resp:
+                if resp.status != 206:
+                    raise OSError(f"servidor não aceita Range (HTTP {resp.status})")
+                dados = resp.read()
+            if len(dados) != fim - inicio + 1:
+                raise OSError(f"resposta incompleta: {len(dados)} de {fim - inicio + 1} bytes")
+            return dados
+        except Exception as e:  # noqa: BLE001 - rede instável: tenta de novo
+            if tentativa == tentativas - 1:
+                raise
+            time.sleep(min(2 ** tentativa, 30))
+
+
+class ArquivoHttp:
+    """Arquivo somente-leitura sobre HTTP Range, só o bastante para o zipfile ler o diretório."""
+
+    def __init__(self, url):
+        self.url, self.pos, self._ini, self._buf = url, 0, 0, b""
+        req = urllib.request.Request(url, method="HEAD", headers={"User-Agent": "tse-analise/1.0"})
+        with urllib.request.urlopen(req, timeout=60) as resp:
+            if resp.headers.get("Accept-Ranges", "").lower() != "bytes":
+                raise OSError("servidor não informa suporte a Range")
+            self.tamanho = int(resp.headers["Content-Length"])
+
+    def seekable(self):
+        return True
+
+    def tell(self):
+        return self.pos
+
+    def seek(self, deslocamento, origem=0):
+        base = (0, self.pos, self.tamanho)[origem]
+        self.pos = base + deslocamento
+        return self.pos
+
+    def read(self, n=-1):
+        n = self.tamanho - self.pos if n < 0 else min(n, self.tamanho - self.pos)
+        if n <= 0:
+            return b""
+        if not (self._ini <= self.pos and self.pos + n <= self._ini + len(self._buf)):
+            fim = min(self.pos + max(n, 1 << 16), self.tamanho) - 1
+            self._buf, self._ini = http_range(self.url, self.pos, fim), self.pos
+        o = self.pos - self._ini
+        self.pos += n
+        return self._buf[o:o + n]
+
+
+def ler_membro(url, info, tamanho):
+    """Baixa só os bytes de um arquivo de dentro do zip remoto (cabeçalho local + dados)."""
+    ini = info.header_offset
+    fim = min(ini + 30 + 2 * len(info.filename) + 512 + info.compress_size, tamanho) - 1
+    bruto = http_range(url, ini, fim)
+    nome_len, extra_len = struct.unpack("<HH", bruto[26:30])
+    dados = bruto[30 + nome_len + extra_len:30 + nome_len + extra_len + info.compress_size]
+    if info.compress_type == zipfile.ZIP_STORED:
+        return dados
+    if info.compress_type == zipfile.ZIP_DEFLATED:
+        return zlib.decompress(dados, -15)
+    raise OSError(f"compressão não suportada em {info.filename}: {info.compress_type}")
+
+
+def iterar_logjez_remoto(url, threads):
+    """Como iterar_logjez, mas sem baixar o zip inteiro: só lê os -log.jez via HTTP Range."""
+    arq = ArquivoHttp(url)
+    with zipfile.ZipFile(arq) as zf:
+        infos = [i for i in zf.infolist() if i.filename.lower().endswith("-log.jez")]
+    with ThreadPoolExecutor(threads) as pool:
+        yield from map_limitado(pool, lambda i: (i.filename, ler_membro(url, i, arq.tamanho)),
+                                infos, janela=threads * 4)
 
 
 # ---------------------------------------------------------------- logs de urna
@@ -150,12 +229,13 @@ def gravar_secoes(con, turno, uf, lote):
         [(turno, uf, mu, zo, se, hora, n) for mu, zo, se, h, *_ in lote for hora, n in h.items()])
 
 
-def carregar_uf(con, caminho_zip, turno, uf, processos):
+def carregar_uf(con, itens, turno, uf, processos):
+    """Processa os (nome, bytes do -log.jez) de uma UF e grava no banco."""
     data_eleicao = DATAS_TURNO[turno]
     arquivos = erros = 0
     lote = []
-    with zipfile.ZipFile(caminho_zip) as zf, ProcessPoolExecutor(processos) as pool:
-        tarefas = ((nome, dados, data_eleicao) for nome, dados in iterar_logjez(zf))
+    with ProcessPoolExecutor(processos) as pool:
+        tarefas = ((nome, dados, data_eleicao) for nome, dados in itens)
         for nome, res, erro in map_limitado(pool, processar_logjez, tarefas):
             arquivos += 1
             if erro:
@@ -184,8 +264,12 @@ def cmd_logs(a):
                 print(f"{uf} {turno}º turno já carregado (use --refazer para recarregar)")
                 continue
             url = a.url_urna.format(ano=a.ano, turno=turno, uf=uf)
+            if a.modo == "remoto":
+                carregar_uf(con, iterar_logjez_remoto(url, a.threads), turno, uf, a.processos)
+                continue
             caminho = baixar(url, Path(a.dir_download) / os.path.basename(url))
-            carregar_uf(con, caminho, turno, uf, a.processos)
+            with zipfile.ZipFile(caminho) as zf:
+                carregar_uf(con, iterar_logjez(zf), turno, uf, a.processos)
             if not a.manter_zip:
                 caminho.unlink()
 
@@ -373,7 +457,7 @@ def cmd_analisar(a):
 # ---------------------------------------------------------------- utilidades / CLI
 
 def conectar(caminho):
-    con = sqlite3.connect(caminho)
+    con = sqlite3.connect(caminho, timeout=120)
     con.execute("PRAGMA journal_mode=WAL")
     con.executescript((AQUI / "schema.sql").read_text(encoding="utf-8"))
     return con
@@ -392,6 +476,10 @@ def main():
     s.add_argument("--ufs", nargs="+", default=UFS, type=str.upper)
     s.add_argument("--processos", type=int, default=os.cpu_count())
     s.add_argument("--refazer", action="store_true")
+    s.add_argument("--modo", choices=["remoto", "completo"], default="remoto",
+                   help="remoto: lê só os logs de dentro do zip via HTTP Range, sem usar disco (padrão); "
+                        "completo: baixa o zip inteiro")
+    s.add_argument("--threads", type=int, default=24, help="downloads simultâneos no modo remoto")
     s.add_argument("--url-urna", default=URL_URNA)
     s.set_defaults(func=cmd_logs)
 
