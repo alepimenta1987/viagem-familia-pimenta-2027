@@ -3,21 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Crescimento de votos pelo tamanho do eleitorado — Presidente 2026</title>
+<title>Votos e abstenções por estado — Presidente 2026</title>
 <style>
-/* Layout: números ponderados no topo, contribuição por estado no centro, bolhas (peso x taxa) em duas colunas, tabela ordenável embaixo. */
+/* Layout: números ponderados no topo, contribuição por estado, bolhas (peso x taxa), abstenções/brancos/nulos em três painéis, duas tabelas ordenáveis. */
 :root {
   --bg: #f3f5f8; --papel: #ffffff; --tinta: #16202e; --suave: #5a6677; --linha: #d9dfe8; --faixa: #f6f8fb;
-  --L: #c4303d; --F: #2b5cb8;
+  --L: #c4303d; --F: #2b5cb8; --A: #b7791f; --B: #0f8a7a; --N: #7a52b3; --V: #16202e;
   --serif: Charter, "Iowan Old Style", "Palatino Linotype", Georgia, serif;
   --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
   --bg: #0f151e; --papel: #171f2b; --tinta: #e8edf4; --suave: #9aa6b8; --linha: #2a3545; --faixa: #1b2433;
-  --L: #ff7782; --F: #7ea6ff; color-scheme: dark; } }
+  --L: #ff7782; --F: #7ea6ff; --A: #f0b84a; --B: #43c9b6; --N: #b79cf0; --V: #e8edf4; color-scheme: dark; } }
 :root[data-theme="dark"] {
   --bg: #0f151e; --papel: #171f2b; --tinta: #e8edf4; --suave: #9aa6b8; --linha: #2a3545; --faixa: #1b2433;
-  --L: #ff7782; --F: #7ea6ff; color-scheme: dark; }
+  --L: #ff7782; --F: #7ea6ff; --A: #f0b84a; --B: #43c9b6; --N: #b79cf0; --V: #e8edf4; color-scheme: dark; }
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--bg); color: var(--tinta); font: 14px/1.5 var(--sans);
   padding: 24px max(16px, env(safe-area-inset-right, 0px)) 24px max(16px, env(safe-area-inset-left, 0px)); }
@@ -31,6 +31,7 @@ h2 { font: 600 12px/1.3 var(--sans); text-transform: uppercase; letter-spacing: 
 .destaques, .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; }
 .rotulo { font-weight: 600; margin-bottom: 4px; display: flex; gap: 8px; align-items: center; }
 .rotulo i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.dA { background: var(--A); } .dB { background: var(--B); } .dN { background: var(--N); } .dV { background: var(--V); }
 .dL { background: var(--L); } .dF { background: var(--F); } .cL { color: var(--L); } .cF { color: var(--F); }
 .num { font: 700 clamp(34px, 6vw, 48px)/1.1 var(--serif); font-variant-numeric: tabular-nums; }
 .meta { color: var(--suave); font-size: 13px; }
@@ -53,6 +54,13 @@ svg .val.L { fill: var(--L); } svg .val.F { fill: var(--F); }
 .bol { fill-opacity: .35; stroke-width: 1.5; } .bol.L { fill: var(--L); stroke: var(--L); } .bol.F { fill: var(--F); stroke: var(--F); }
 .nac { stroke-width: 1.5; stroke-dasharray: 5 4; } .nac.L { stroke: var(--L); } .nac.F { stroke: var(--F); }
 svg .rnac { font-size: 11px; font-weight: 700; } svg .rnac.L { fill: var(--L); } svg .rnac.F { fill: var(--F); }
+.quatro { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 4px 0 14px; }
+.quatro .caixa { padding: 12px 14px; background: var(--faixa); }
+.num2 { font: 700 28px/1.2 var(--serif); font-variant-numeric: tabular-nums; } .num2 small { font: 400 13px var(--sans); color: var(--suave); }
+.ptit { font-size: 13px; font-weight: 700; fill: var(--tinta); }
+.elo2 { stroke-width: 3; stroke-linecap: round; opacity: .5; } .elo2.A { stroke: var(--A); } .elo2.B { stroke: var(--B); } .elo2.N { stroke: var(--N); }
+.p1 { fill: var(--papel); stroke: var(--suave); stroke-width: 1.6; }
+.p2.A { fill: var(--A); } .p2.B { fill: var(--B); } .p2.N { fill: var(--N); }
 .legenda { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12px; color: var(--suave); margin-top: 6px; }
 .legenda i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; vertical-align: middle; margin-right: 6px; }
 .tabela { overflow-x: auto; }
@@ -71,14 +79,15 @@ tr.total th, tr.total td { border-top: 2px solid var(--tinta); border-bottom: 0;
 .notas p { margin: 0; max-width: 62ch; }
 footer { color: var(--suave); font-size: 12px; }
 @media (max-width: 860px) { .notas, .grid2 { grid-template-columns: 1fr; } }
-@media (max-width: 560px) { .destaques, .trio { grid-template-columns: 1fr; } }
+@media (max-width: 860px) { .quatro { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .destaques, .trio, .quatro { grid-template-columns: 1fr; } }
 @media print { body { padding: 8mm; background: #fff; } @page { size: A4 portrait; margin: 0; } }
 </style>
 </head>
 <body>
 <main>
 <header>
-  <h1>Crescimento de votos considerando o tamanho do eleitorado de cada estado</h1>
+  <h1>Crescimento de votos pelo tamanho do eleitorado e evolução de abstenções, brancos e nulos</h1>
   <div class="sub">Presidente 2026 · 1º para o 2º turno · 158.745.463 eleitores aptos</div>
 </header>
 
@@ -459,9 +468,331 @@ footer { color: var(--suave); font-size: 12px; }
 </div>
 
 <section>
+  <h2>Abstenções, brancos e nulos: 1º turno → 2º turno</h2>
+  <p class="leg">Abstenção = eleitores aptos que não compareceram. Brancos e nulos são calculados sobre os comparecidos. As variações estão em pontos percentuais (p.p.).</p>
+  <div class="quatro"><div class="caixa"><div class="rotulo"><i class="dA"></i>Abstenções</div><div class="num2">-1,86 <small>p.p.</small></div><div class="meta">33.469.628 (21,08%) → 30.509.389 (19,22%)</div><div class="meta">-2.960.239 votos de diferença · % do eleitorado</div></div><div class="caixa"><div class="rotulo"><i class="dB"></i>Brancos</div><div class="num2">-0,72 <small>p.p.</small></div><div class="meta">2.300.798 (1,84%) → 1.430.496 (1,12%)</div><div class="meta">-870.302 votos de diferença · % dos comparecidos</div></div><div class="caixa"><div class="rotulo"><i class="dN"></i>Nulos</div><div class="num2">-0,81 <small>p.p.</small></div><div class="meta">3.669.003 (2,93%) → 2.723.305 (2,12%)</div><div class="meta">-945.698 votos de diferença · % dos comparecidos</div></div><div class="caixa"><div class="rotulo"><i class="dV"></i>Abstenções + brancos + nulos</div><div class="num2">-3,01 <small>p.p.</small></div><div class="meta">39.439.429 (24,84%) → 34.663.190 (21,84%)</div><div class="meta">-4.776.239 votos de diferença · % do eleitorado</div></div></div>
+  <p class="leg">Por estado, em ordem de tamanho do eleitorado. O círculo vazio é o 1º turno e o cheio é o 2º. A abstenção caiu em 18 estados, subiu em 8 e ficou igual em 1. A maior queda foi em BA (-3,3 p.p.) e a maior alta em AP (+8,1 p.p.). Brancos e nulos juntos caíram mais em AL (-3,4 p.p.). O exterior fica só na tabela, porque a abstenção dele (63% no 1º turno) deforma a escala.</p>
+  <svg viewBox="0 0 1040 614" role="img" aria-label="Evolução de abstenções, brancos e nulos por estado">
+<text x="90" y="20" class="ptit">Abstenção</text><text x="370" y="20" class="eixo" text-anchor="end">% do eleitorado</text>
+<line x1="90.0" x2="90.0" y1="38" y2="586" class="grade"/>
+<text x="90.0" y="602" class="eixo" text-anchor="middle">10%</text>
+<line x1="160.0" x2="160.0" y1="38" y2="586" class="grade"/>
+<text x="160.0" y="602" class="eixo" text-anchor="middle">15%</text>
+<line x1="230.0" x2="230.0" y1="38" y2="586" class="grade"/>
+<text x="230.0" y="602" class="eixo" text-anchor="middle">20%</text>
+<line x1="300.0" x2="300.0" y1="38" y2="586" class="grade"/>
+<text x="300.0" y="602" class="eixo" text-anchor="middle">25%</text>
+<line x1="370.0" x2="370.0" y1="38" y2="586" class="grade"/>
+<text x="370.0" y="602" class="eixo" text-anchor="middle">30%</text>
+<line x1="265.0" x2="226.7" y1="56.0" y2="56.0" class="elo2 A"/>
+<circle cx="265.0" cy="56.0" r="4" class="p1"><title>São Paulo · 1º turno: 22,50%</title></circle>
+<circle cx="226.7" cy="56.0" r="4.5" class="p2 A"><title>São Paulo · 2º turno: 19,76% (-2,73 p.p.)</title></circle>
+<line x1="269.7" x2="235.0" y1="76.0" y2="76.0" class="elo2 A"/>
+<circle cx="269.7" cy="76.0" r="4" class="p1"><title>Minas Gerais · 1º turno: 22,84%</title></circle>
+<circle cx="235.0" cy="76.0" r="4.5" class="p2 A"><title>Minas Gerais · 2º turno: 20,35% (-2,48 p.p.)</title></circle>
+<line x1="276.4" x2="252.7" y1="96.0" y2="96.0" class="elo2 A"/>
+<circle cx="276.4" cy="96.0" r="4" class="p1"><title>Rio de Janeiro · 1º turno: 23,31%</title></circle>
+<circle cx="252.7" cy="96.0" r="4.5" class="p2 A"><title>Rio de Janeiro · 2º turno: 21,62% (-1,69 p.p.)</title></circle>
+<line x1="230.4" x2="184.8" y1="116.0" y2="116.0" class="elo2 A"/>
+<circle cx="230.4" cy="116.0" r="4" class="p1"><title>Bahia · 1º turno: 20,03%</title></circle>
+<circle cx="184.8" cy="116.0" r="4.5" class="p2 A"><title>Bahia · 2º turno: 16,77% (-3,25 p.p.)</title></circle>
+<line x1="237.4" x2="202.0" y1="136.0" y2="136.0" class="elo2 A"/>
+<circle cx="237.4" cy="136.0" r="4" class="p1"><title>Paraná · 1º turno: 20,53%</title></circle>
+<circle cx="202.0" cy="136.0" r="4.5" class="p2 A"><title>Paraná · 2º turno: 18,00% (-2,53 p.p.)</title></circle>
+<line x1="249.4" x2="218.7" y1="156.0" y2="156.0" class="elo2 A"/>
+<circle cx="249.4" cy="156.0" r="4" class="p1"><title>Rio Grande do Sul · 1º turno: 21,38%</title></circle>
+<circle cx="218.7" cy="156.0" r="4.5" class="p2 A"><title>Rio Grande do Sul · 2º turno: 19,19% (-2,19 p.p.)</title></circle>
+<line x1="204.7" x2="163.0" y1="176.0" y2="176.0" class="elo2 A"/>
+<circle cx="204.7" cy="176.0" r="4" class="p1"><title>Pernambuco · 1º turno: 18,19%</title></circle>
+<circle cx="163.0" cy="176.0" r="4.5" class="p2 A"><title>Pernambuco · 2º turno: 15,21% (-2,98 p.p.)</title></circle>
+<line x1="167.7" x2="144.8" y1="196.0" y2="196.0" class="elo2 A"/>
+<circle cx="167.7" cy="196.0" r="4" class="p1"><title>Ceará · 1º turno: 15,55%</title></circle>
+<circle cx="144.8" cy="196.0" r="4.5" class="p2 A"><title>Ceará · 2º turno: 13,91% (-1,63 p.p.)</title></circle>
+<line x1="217.9" x2="235.1" y1="216.0" y2="216.0" class="elo2 A"/>
+<circle cx="217.9" cy="216.0" r="4" class="p1"><title>Pará · 1º turno: 19,13%</title></circle>
+<circle cx="235.1" cy="216.0" r="4.5" class="p2 A"><title>Pará · 2º turno: 20,36% (+1,23 p.p.)</title></circle>
+<line x1="213.5" x2="185.6" y1="236.0" y2="236.0" class="elo2 A"/>
+<circle cx="213.5" cy="236.0" r="4" class="p1"><title>Santa Catarina · 1º turno: 18,82%</title></circle>
+<circle cx="185.6" cy="236.0" r="4.5" class="p2 A"><title>Santa Catarina · 2º turno: 16,83% (-1,99 p.p.)</title></circle>
+<line x1="227.0" x2="235.8" y1="256.0" y2="256.0" class="elo2 A"/>
+<circle cx="227.0" cy="256.0" r="4" class="p1"><title>Maranhão · 1º turno: 19,79%</title></circle>
+<circle cx="235.8" cy="256.0" r="4.5" class="p2 A"><title>Maranhão · 2º turno: 20,41% (+0,63 p.p.)</title></circle>
+<line x1="255.6" x2="234.8" y1="276.0" y2="276.0" class="elo2 A"/>
+<circle cx="255.6" cy="276.0" r="4" class="p1"><title>Goiás · 1º turno: 21,83%</title></circle>
+<circle cx="234.8" cy="276.0" r="4.5" class="p2 A"><title>Goiás · 2º turno: 20,34% (-1,49 p.p.)</title></circle>
+<line x1="192.9" x2="167.2" y1="296.0" y2="296.0" class="elo2 A"/>
+<circle cx="192.9" cy="296.0" r="4" class="p1"><title>Paraíba · 1º turno: 17,35%</title></circle>
+<circle cx="167.2" cy="296.0" r="4.5" class="p2 A"><title>Paraíba · 2º turno: 15,52% (-1,83 p.p.)</title></circle>
+<line x1="248.8" x2="222.1" y1="316.0" y2="316.0" class="elo2 A"/>
+<circle cx="248.8" cy="316.0" r="4" class="p1"><title>Espírito Santo · 1º turno: 21,34%</title></circle>
+<circle cx="222.1" cy="316.0" r="4.5" class="p2 A"><title>Espírito Santo · 2º turno: 19,44% (-1,90 p.p.)</title></circle>
+<line x1="233.2" x2="254.4" y1="336.0" y2="336.0" class="elo2 A"/>
+<circle cx="233.2" cy="336.0" r="4" class="p1"><title>Amazonas · 1º turno: 20,23%</title></circle>
+<circle cx="254.4" cy="336.0" r="4.5" class="p2 A"><title>Amazonas · 2º turno: 21,75% (+1,52 p.p.)</title></circle>
+<line x1="191.6" x2="192.1" y1="356.0" y2="356.0" class="elo2 A"/>
+<circle cx="191.6" cy="356.0" r="4" class="p1"><title>Piauí · 1º turno: 17,25%</title></circle>
+<circle cx="192.1" cy="356.0" r="4.5" class="p2 A"><title>Piauí · 2º turno: 17,29% (+0,04 p.p.)</title></circle>
+<line x1="207.6" x2="175.1" y1="376.0" y2="376.0" class="elo2 A"/>
+<circle cx="207.6" cy="376.0" r="4" class="p1"><title>Rio Grande do Norte · 1º turno: 18,40%</title></circle>
+<circle cx="175.1" cy="376.0" r="4.5" class="p2 A"><title>Rio Grande do Norte · 2º turno: 16,08% (-2,32 p.p.)</title></circle>
+<line x1="261.0" x2="243.4" y1="396.0" y2="396.0" class="elo2 A"/>
+<circle cx="261.0" cy="396.0" r="4" class="p1"><title>Mato Grosso · 1º turno: 22,22%</title></circle>
+<circle cx="243.4" cy="396.0" r="4.5" class="p2 A"><title>Mato Grosso · 2º turno: 20,96% (-1,26 p.p.)</title></circle>
+<line x1="238.6" x2="231.0" y1="416.0" y2="416.0" class="elo2 A"/>
+<circle cx="238.6" cy="416.0" r="4" class="p1"><title>Alagoas · 1º turno: 20,61%</title></circle>
+<circle cx="231.0" cy="416.0" r="4.5" class="p2 A"><title>Alagoas · 2º turno: 20,07% (-0,54 p.p.)</title></circle>
+<line x1="212.0" x2="189.1" y1="436.0" y2="436.0" class="elo2 A"/>
+<circle cx="212.0" cy="436.0" r="4" class="p1"><title>Distrito Federal · 1º turno: 18,72%</title></circle>
+<circle cx="189.1" cy="436.0" r="4.5" class="p2 A"><title>Distrito Federal · 2º turno: 17,08% (-1,64 p.p.)</title></circle>
+<line x1="284.4" x2="247.6" y1="456.0" y2="456.0" class="elo2 A"/>
+<circle cx="284.4" cy="456.0" r="4" class="p1"><title>Mato Grosso do Sul · 1º turno: 23,89%</title></circle>
+<circle cx="247.6" cy="456.0" r="4.5" class="p2 A"><title>Mato Grosso do Sul · 2º turno: 21,26% (-2,63 p.p.)</title></circle>
+<line x1="192.2" x2="170.0" y1="476.0" y2="476.0" class="elo2 A"/>
+<circle cx="192.2" cy="476.0" r="4" class="p1"><title>Sergipe · 1º turno: 17,30%</title></circle>
+<circle cx="170.0" cy="476.0" r="4.5" class="p2 A"><title>Sergipe · 2º turno: 15,72% (-1,58 p.p.)</title></circle>
+<line x1="255.0" x2="257.8" y1="496.0" y2="496.0" class="elo2 A"/>
+<circle cx="255.0" cy="496.0" r="4" class="p1"><title>Rondônia · 1º turno: 21,78%</title></circle>
+<circle cx="257.8" cy="496.0" r="4.5" class="p2 A"><title>Rondônia · 2º turno: 21,99% (+0,20 p.p.)</title></circle>
+<line x1="207.1" x2="219.4" y1="516.0" y2="516.0" class="elo2 A"/>
+<circle cx="207.1" cy="516.0" r="4" class="p1"><title>Tocantins · 1º turno: 18,36%</title></circle>
+<circle cx="219.4" cy="516.0" r="4.5" class="p2 A"><title>Tocantins · 2º turno: 19,25% (+0,88 p.p.)</title></circle>
+<line x1="237.2" x2="316.2" y1="536.0" y2="536.0" class="elo2 A"/>
+<circle cx="237.2" cy="536.0" r="4" class="p1"><title>Acre · 1º turno: 20,52%</title></circle>
+<circle cx="316.2" cy="536.0" r="4.5" class="p2 A"><title>Acre · 2º turno: 26,16% (+5,64 p.p.)</title></circle>
+<line x1="194.8" x2="307.7" y1="556.0" y2="556.0" class="elo2 A"/>
+<circle cx="194.8" cy="556.0" r="4" class="p1"><title>Amapá · 1º turno: 17,48%</title></circle>
+<circle cx="307.7" cy="556.0" r="4.5" class="p2 A"><title>Amapá · 2º turno: 25,55% (+8,07 p.p.)</title></circle>
+<line x1="189.6" x2="273.9" y1="576.0" y2="576.0" class="elo2 A"/>
+<circle cx="189.6" cy="576.0" r="4" class="p1"><title>Roraima · 1º turno: 17,12%</title></circle>
+<circle cx="273.9" cy="576.0" r="4.5" class="p2 A"><title>Roraima · 2º turno: 23,14% (+6,02 p.p.)</title></circle>
+<text x="410" y="20" class="ptit">Brancos</text><text x="690" y="20" class="eixo" text-anchor="end">% dos comparecidos</text>
+<line x1="410.0" x2="410.0" y1="38" y2="586" class="grade"/>
+<text x="410.0" y="602" class="eixo" text-anchor="middle">0%</text>
+<line x1="503.3" x2="503.3" y1="38" y2="586" class="grade"/>
+<text x="503.3" y="602" class="eixo" text-anchor="middle">1%</text>
+<line x1="596.7" x2="596.7" y1="38" y2="586" class="grade"/>
+<text x="596.7" y="602" class="eixo" text-anchor="middle">2%</text>
+<line x1="690.0" x2="690.0" y1="38" y2="586" class="grade"/>
+<text x="690.0" y="602" class="eixo" text-anchor="middle">3%</text>
+<line x1="633.4" x2="542.9" y1="56.0" y2="56.0" class="elo2 B"/>
+<circle cx="633.4" cy="56.0" r="4" class="p1"><title>São Paulo · 1º turno: 2,39%</title></circle>
+<circle cx="542.9" cy="56.0" r="4.5" class="p2 B"><title>São Paulo · 2º turno: 1,42% (-0,97 p.p.)</title></circle>
+<line x1="608.2" x2="527.4" y1="76.0" y2="76.0" class="elo2 B"/>
+<circle cx="608.2" cy="76.0" r="4" class="p1"><title>Minas Gerais · 1º turno: 2,12%</title></circle>
+<circle cx="527.4" cy="76.0" r="4.5" class="p2 B"><title>Minas Gerais · 2º turno: 1,26% (-0,86 p.p.)</title></circle>
+<line x1="601.2" x2="513.4" y1="96.0" y2="96.0" class="elo2 B"/>
+<circle cx="601.2" cy="96.0" r="4" class="p1"><title>Rio de Janeiro · 1º turno: 2,05%</title></circle>
+<circle cx="513.4" cy="96.0" r="4.5" class="p2 B"><title>Rio de Janeiro · 2º turno: 1,11% (-0,94 p.p.)</title></circle>
+<line x1="569.7" x2="501.8" y1="116.0" y2="116.0" class="elo2 B"/>
+<circle cx="569.7" cy="116.0" r="4" class="p1"><title>Bahia · 1º turno: 1,71%</title></circle>
+<circle cx="501.8" cy="116.0" r="4.5" class="p2 B"><title>Bahia · 2º turno: 0,98% (-0,73 p.p.)</title></circle>
+<line x1="577.1" x2="519.2" y1="136.0" y2="136.0" class="elo2 B"/>
+<circle cx="577.1" cy="136.0" r="4" class="p1"><title>Paraná · 1º turno: 1,79%</title></circle>
+<circle cx="519.2" cy="136.0" r="4.5" class="p2 B"><title>Paraná · 2º turno: 1,17% (-0,62 p.p.)</title></circle>
+<line x1="616.6" x2="531.2" y1="156.0" y2="156.0" class="elo2 B"/>
+<circle cx="616.6" cy="156.0" r="4" class="p1"><title>Rio Grande do Sul · 1º turno: 2,21%</title></circle>
+<circle cx="531.2" cy="156.0" r="4.5" class="p2 B"><title>Rio Grande do Sul · 2º turno: 1,30% (-0,91 p.p.)</title></circle>
+<line x1="582.9" x2="496.5" y1="176.0" y2="176.0" class="elo2 B"/>
+<circle cx="582.9" cy="176.0" r="4" class="p1"><title>Pernambuco · 1º turno: 1,85%</title></circle>
+<circle cx="496.5" cy="176.0" r="4.5" class="p2 B"><title>Pernambuco · 2º turno: 0,93% (-0,93 p.p.)</title></circle>
+<line x1="573.1" x2="497.3" y1="196.0" y2="196.0" class="elo2 B"/>
+<circle cx="573.1" cy="196.0" r="4" class="p1"><title>Ceará · 1º turno: 1,75%</title></circle>
+<circle cx="497.3" cy="196.0" r="4.5" class="p2 B"><title>Ceará · 2º turno: 0,94% (-0,81 p.p.)</title></circle>
+<line x1="509.9" x2="478.3" y1="216.0" y2="216.0" class="elo2 B"/>
+<circle cx="509.9" cy="216.0" r="4" class="p1"><title>Pará · 1º turno: 1,07%</title></circle>
+<circle cx="478.3" cy="216.0" r="4.5" class="p2 B"><title>Pará · 2º turno: 0,73% (-0,34 p.p.)</title></circle>
+<line x1="548.6" x2="505.4" y1="236.0" y2="236.0" class="elo2 B"/>
+<circle cx="548.6" cy="236.0" r="4" class="p1"><title>Santa Catarina · 1º turno: 1,48%</title></circle>
+<circle cx="505.4" cy="236.0" r="4.5" class="p2 B"><title>Santa Catarina · 2º turno: 1,02% (-0,46 p.p.)</title></circle>
+<line x1="513.9" x2="479.8" y1="256.0" y2="256.0" class="elo2 B"/>
+<circle cx="513.9" cy="256.0" r="4" class="p1"><title>Maranhão · 1º turno: 1,11%</title></circle>
+<circle cx="479.8" cy="256.0" r="4.5" class="p2 B"><title>Maranhão · 2º turno: 0,75% (-0,37 p.p.)</title></circle>
+<line x1="517.3" x2="509.7" y1="276.0" y2="276.0" class="elo2 B"/>
+<circle cx="517.3" cy="276.0" r="4" class="p1"><title>Goiás · 1º turno: 1,15%</title></circle>
+<circle cx="509.7" cy="276.0" r="4.5" class="p2 B"><title>Goiás · 2º turno: 1,07% (-0,08 p.p.)</title></circle>
+<line x1="591.9" x2="498.3" y1="296.0" y2="296.0" class="elo2 B"/>
+<circle cx="591.9" cy="296.0" r="4" class="p1"><title>Paraíba · 1º turno: 1,95%</title></circle>
+<circle cx="498.3" cy="296.0" r="4.5" class="p2 B"><title>Paraíba · 2º turno: 0,95% (-1,00 p.p.)</title></circle>
+<line x1="581.5" x2="538.2" y1="316.0" y2="316.0" class="elo2 B"/>
+<circle cx="581.5" cy="316.0" r="4" class="p1"><title>Espírito Santo · 1º turno: 1,84%</title></circle>
+<circle cx="538.2" cy="316.0" r="4.5" class="p2 B"><title>Espírito Santo · 2º turno: 1,37% (-0,46 p.p.)</title></circle>
+<line x1="511.9" x2="488.0" y1="336.0" y2="336.0" class="elo2 B"/>
+<circle cx="511.9" cy="336.0" r="4" class="p1"><title>Amazonas · 1º turno: 1,09%</title></circle>
+<circle cx="488.0" cy="336.0" r="4.5" class="p2 B"><title>Amazonas · 2º turno: 0,84% (-0,26 p.p.)</title></circle>
+<line x1="528.0" x2="477.2" y1="356.0" y2="356.0" class="elo2 B"/>
+<circle cx="528.0" cy="356.0" r="4" class="p1"><title>Piauí · 1º turno: 1,26%</title></circle>
+<circle cx="477.2" cy="356.0" r="4.5" class="p2 B"><title>Piauí · 2º turno: 0,72% (-0,54 p.p.)</title></circle>
+<line x1="552.6" x2="493.3" y1="376.0" y2="376.0" class="elo2 B"/>
+<circle cx="552.6" cy="376.0" r="4" class="p1"><title>Rio Grande do Norte · 1º turno: 1,53%</title></circle>
+<circle cx="493.3" cy="376.0" r="4.5" class="p2 B"><title>Rio Grande do Norte · 2º turno: 0,89% (-0,63 p.p.)</title></circle>
+<line x1="504.4" x2="479.1" y1="396.0" y2="396.0" class="elo2 B"/>
+<circle cx="504.4" cy="396.0" r="4" class="p1"><title>Mato Grosso · 1º turno: 1,01%</title></circle>
+<circle cx="479.1" cy="396.0" r="4.5" class="p2 B"><title>Mato Grosso · 2º turno: 0,74% (-0,27 p.p.)</title></circle>
+<line x1="572.3" x2="491.2" y1="416.0" y2="416.0" class="elo2 B"/>
+<circle cx="572.3" cy="416.0" r="4" class="p1"><title>Alagoas · 1º turno: 1,74%</title></circle>
+<circle cx="491.2" cy="416.0" r="4.5" class="p2 B"><title>Alagoas · 2º turno: 0,87% (-0,87 p.p.)</title></circle>
+<line x1="539.3" x2="521.8" y1="436.0" y2="436.0" class="elo2 B"/>
+<circle cx="539.3" cy="436.0" r="4" class="p1"><title>Distrito Federal · 1º turno: 1,38%</title></circle>
+<circle cx="521.8" cy="436.0" r="4.5" class="p2 B"><title>Distrito Federal · 2º turno: 1,20% (-0,19 p.p.)</title></circle>
+<line x1="538.8" x2="497.6" y1="456.0" y2="456.0" class="elo2 B"/>
+<circle cx="538.8" cy="456.0" r="4" class="p1"><title>Mato Grosso do Sul · 1º turno: 1,38%</title></circle>
+<circle cx="497.6" cy="456.0" r="4.5" class="p2 B"><title>Mato Grosso do Sul · 2º turno: 0,94% (-0,44 p.p.)</title></circle>
+<line x1="571.2" x2="493.6" y1="476.0" y2="476.0" class="elo2 B"/>
+<circle cx="571.2" cy="476.0" r="4" class="p1"><title>Sergipe · 1º turno: 1,73%</title></circle>
+<circle cx="493.6" cy="476.0" r="4.5" class="p2 B"><title>Sergipe · 2º turno: 0,90% (-0,83 p.p.)</title></circle>
+<line x1="502.7" x2="488.9" y1="496.0" y2="496.0" class="elo2 B"/>
+<circle cx="502.7" cy="496.0" r="4" class="p1"><title>Rondônia · 1º turno: 0,99%</title></circle>
+<circle cx="488.9" cy="496.0" r="4.5" class="p2 B"><title>Rondônia · 2º turno: 0,85% (-0,15 p.p.)</title></circle>
+<line x1="490.7" x2="488.8" y1="516.0" y2="516.0" class="elo2 B"/>
+<circle cx="490.7" cy="516.0" r="4" class="p1"><title>Tocantins · 1º turno: 0,86%</title></circle>
+<circle cx="488.8" cy="516.0" r="4.5" class="p2 B"><title>Tocantins · 2º turno: 0,84% (-0,02 p.p.)</title></circle>
+<line x1="516.6" x2="513.2" y1="536.0" y2="536.0" class="elo2 B"/>
+<circle cx="516.6" cy="536.0" r="4" class="p1"><title>Acre · 1º turno: 1,14%</title></circle>
+<circle cx="513.2" cy="536.0" r="4.5" class="p2 B"><title>Acre · 2º turno: 1,11% (-0,04 p.p.)</title></circle>
+<line x1="496.5" x2="482.1" y1="556.0" y2="556.0" class="elo2 B"/>
+<circle cx="496.5" cy="556.0" r="4" class="p1"><title>Amapá · 1º turno: 0,93%</title></circle>
+<circle cx="482.1" cy="556.0" r="4.5" class="p2 B"><title>Amapá · 2º turno: 0,77% (-0,15 p.p.)</title></circle>
+<line x1="483.4" x2="475.8" y1="576.0" y2="576.0" class="elo2 B"/>
+<circle cx="483.4" cy="576.0" r="4" class="p1"><title>Roraima · 1º turno: 0,79%</title></circle>
+<circle cx="475.8" cy="576.0" r="4.5" class="p2 B"><title>Roraima · 2º turno: 0,71% (-0,08 p.p.)</title></circle>
+<text x="730" y="20" class="ptit">Nulos</text><text x="1010" y="20" class="eixo" text-anchor="end">% dos comparecidos</text>
+<line x1="730.0" x2="730.0" y1="38" y2="586" class="grade"/>
+<text x="730.0" y="602" class="eixo" text-anchor="middle">0%</text>
+<line x1="786.0" x2="786.0" y1="38" y2="586" class="grade"/>
+<text x="786.0" y="602" class="eixo" text-anchor="middle">1%</text>
+<line x1="842.0" x2="842.0" y1="38" y2="586" class="grade"/>
+<text x="842.0" y="602" class="eixo" text-anchor="middle">2%</text>
+<line x1="898.0" x2="898.0" y1="38" y2="586" class="grade"/>
+<text x="898.0" y="602" class="eixo" text-anchor="middle">3%</text>
+<line x1="954.0" x2="954.0" y1="38" y2="586" class="grade"/>
+<text x="954.0" y="602" class="eixo" text-anchor="middle">4%</text>
+<line x1="1010.0" x2="1010.0" y1="38" y2="586" class="grade"/>
+<text x="1010.0" y="602" class="eixo" text-anchor="middle">5%</text>
+<line x1="923.8" x2="876.6" y1="56.0" y2="56.0" class="elo2 N"/>
+<circle cx="923.8" cy="56.0" r="4" class="p1"><title>São Paulo · 1º turno: 3,46%</title></circle>
+<circle cx="876.6" cy="56.0" r="4.5" class="p2 N"><title>São Paulo · 2º turno: 2,62% (-0,84 p.p.)</title></circle>
+<line x1="903.8" x2="853.3" y1="76.0" y2="76.0" class="elo2 N"/>
+<circle cx="903.8" cy="76.0" r="4" class="p1"><title>Minas Gerais · 1º turno: 3,10%</title></circle>
+<circle cx="853.3" cy="76.0" r="4.5" class="p2 N"><title>Minas Gerais · 2º turno: 2,20% (-0,90 p.p.)</title></circle>
+<line x1="893.4" x2="858.6" y1="96.0" y2="96.0" class="elo2 N"/>
+<circle cx="893.4" cy="96.0" r="4" class="p1"><title>Rio de Janeiro · 1º turno: 2,92%</title></circle>
+<circle cx="858.6" cy="96.0" r="4.5" class="p2 N"><title>Rio de Janeiro · 2º turno: 2,30% (-0,62 p.p.)</title></circle>
+<line x1="939.1" x2="869.9" y1="116.0" y2="116.0" class="elo2 N"/>
+<circle cx="939.1" cy="116.0" r="4" class="p1"><title>Bahia · 1º turno: 3,73%</title></circle>
+<circle cx="869.9" cy="116.0" r="4.5" class="p2 N"><title>Bahia · 2º turno: 2,50% (-1,24 p.p.)</title></circle>
+<line x1="839.2" x2="824.3" y1="136.0" y2="136.0" class="elo2 N"/>
+<circle cx="839.2" cy="136.0" r="4" class="p1"><title>Paraná · 1º turno: 1,95%</title></circle>
+<circle cx="824.3" cy="136.0" r="4.5" class="p2 N"><title>Paraná · 2º turno: 1,68% (-0,27 p.p.)</title></circle>
+<line x1="839.7" x2="812.3" y1="156.0" y2="156.0" class="elo2 N"/>
+<circle cx="839.7" cy="156.0" r="4" class="p1"><title>Rio Grande do Sul · 1º turno: 1,96%</title></circle>
+<circle cx="812.3" cy="156.0" r="4.5" class="p2 N"><title>Rio Grande do Sul · 2º turno: 1,47% (-0,49 p.p.)</title></circle>
+<line x1="919.9" x2="839.4" y1="176.0" y2="176.0" class="elo2 N"/>
+<circle cx="919.9" cy="176.0" r="4" class="p1"><title>Pernambuco · 1º turno: 3,39%</title></circle>
+<circle cx="839.4" cy="176.0" r="4.5" class="p2 N"><title>Pernambuco · 2º turno: 1,95% (-1,44 p.p.)</title></circle>
+<line x1="909.2" x2="834.9" y1="196.0" y2="196.0" class="elo2 N"/>
+<circle cx="909.2" cy="196.0" r="4" class="p1"><title>Ceará · 1º turno: 3,20%</title></circle>
+<circle cx="834.9" cy="196.0" r="4.5" class="p2 N"><title>Ceará · 2º turno: 1,87% (-1,33 p.p.)</title></circle>
+<line x1="894.6" x2="800.4" y1="216.0" y2="216.0" class="elo2 N"/>
+<circle cx="894.6" cy="216.0" r="4" class="p1"><title>Pará · 1º turno: 2,94%</title></circle>
+<circle cx="800.4" cy="216.0" r="4.5" class="p2 N"><title>Pará · 2º turno: 1,26% (-1,68 p.p.)</title></circle>
+<line x1="824.1" x2="818.5" y1="236.0" y2="236.0" class="elo2 N"/>
+<circle cx="824.1" cy="236.0" r="4" class="p1"><title>Santa Catarina · 1º turno: 1,68%</title></circle>
+<circle cx="818.5" cy="236.0" r="4.5" class="p2 N"><title>Santa Catarina · 2º turno: 1,58% (-0,10 p.p.)</title></circle>
+<line x1="869.0" x2="809.7" y1="256.0" y2="256.0" class="elo2 N"/>
+<circle cx="869.0" cy="256.0" r="4" class="p1"><title>Maranhão · 1º turno: 2,48%</title></circle>
+<circle cx="809.7" cy="256.0" r="4.5" class="p2 N"><title>Maranhão · 2º turno: 1,42% (-1,06 p.p.)</title></circle>
+<line x1="868.2" x2="831.3" y1="276.0" y2="276.0" class="elo2 N"/>
+<circle cx="868.2" cy="276.0" r="4" class="p1"><title>Goiás · 1º turno: 2,47%</title></circle>
+<circle cx="831.3" cy="276.0" r="4.5" class="p2 N"><title>Goiás · 2º turno: 1,81% (-0,66 p.p.)</title></circle>
+<line x1="975.9" x2="849.1" y1="296.0" y2="296.0" class="elo2 N"/>
+<circle cx="975.9" cy="296.0" r="4" class="p1"><title>Paraíba · 1º turno: 4,39%</title></circle>
+<circle cx="849.1" cy="296.0" r="4.5" class="p2 N"><title>Paraíba · 2º turno: 2,13% (-2,26 p.p.)</title></circle>
+<line x1="867.8" x2="915.2" y1="316.0" y2="316.0" class="elo2 N"/>
+<circle cx="867.8" cy="316.0" r="4" class="p1"><title>Espírito Santo · 1º turno: 2,46%</title></circle>
+<circle cx="915.2" cy="316.0" r="4.5" class="p2 N"><title>Espírito Santo · 2º turno: 3,31% (+0,85 p.p.)</title></circle>
+<line x1="828.5" x2="864.6" y1="336.0" y2="336.0" class="elo2 N"/>
+<circle cx="828.5" cy="336.0" r="4" class="p1"><title>Amazonas · 1º turno: 1,76%</title></circle>
+<circle cx="864.6" cy="336.0" r="4.5" class="p2 N"><title>Amazonas · 2º turno: 2,40% (+0,65 p.p.)</title></circle>
+<line x1="895.2" x2="839.6" y1="356.0" y2="356.0" class="elo2 N"/>
+<circle cx="895.2" cy="356.0" r="4" class="p1"><title>Piauí · 1º turno: 2,95%</title></circle>
+<circle cx="839.6" cy="356.0" r="4.5" class="p2 N"><title>Piauí · 2º turno: 1,96% (-0,99 p.p.)</title></circle>
+<line x1="899.9" x2="885.2" y1="376.0" y2="376.0" class="elo2 N"/>
+<circle cx="899.9" cy="376.0" r="4" class="p1"><title>Rio Grande do Norte · 1º turno: 3,03%</title></circle>
+<circle cx="885.2" cy="376.0" r="4.5" class="p2 N"><title>Rio Grande do Norte · 2º turno: 2,77% (-0,26 p.p.)</title></circle>
+<line x1="833.7" x2="796.2" y1="396.0" y2="396.0" class="elo2 N"/>
+<circle cx="833.7" cy="396.0" r="4" class="p1"><title>Mato Grosso · 1º turno: 1,85%</title></circle>
+<circle cx="796.2" cy="396.0" r="4.5" class="p2 N"><title>Mato Grosso · 2º turno: 1,18% (-0,67 p.p.)</title></circle>
+<line x1="977.8" x2="838.7" y1="416.0" y2="416.0" class="elo2 N"/>
+<circle cx="977.8" cy="416.0" r="4" class="p1"><title>Alagoas · 1º turno: 4,43%</title></circle>
+<circle cx="838.7" cy="416.0" r="4.5" class="p2 N"><title>Alagoas · 2º turno: 1,94% (-2,48 p.p.)</title></circle>
+<line x1="831.4" x2="853.3" y1="436.0" y2="436.0" class="elo2 N"/>
+<circle cx="831.4" cy="436.0" r="4" class="p1"><title>Distrito Federal · 1º turno: 1,81%</title></circle>
+<circle cx="853.3" cy="436.0" r="4.5" class="p2 N"><title>Distrito Federal · 2º turno: 2,20% (+0,39 p.p.)</title></circle>
+<line x1="837.5" x2="809.5" y1="456.0" y2="456.0" class="elo2 N"/>
+<circle cx="837.5" cy="456.0" r="4" class="p1"><title>Mato Grosso do Sul · 1º turno: 1,92%</title></circle>
+<circle cx="809.5" cy="456.0" r="4.5" class="p2 N"><title>Mato Grosso do Sul · 2º turno: 1,42% (-0,50 p.p.)</title></circle>
+<line x1="924.5" x2="848.9" y1="476.0" y2="476.0" class="elo2 N"/>
+<circle cx="924.5" cy="476.0" r="4" class="p1"><title>Sergipe · 1º turno: 3,47%</title></circle>
+<circle cx="848.9" cy="476.0" r="4.5" class="p2 N"><title>Sergipe · 2º turno: 2,12% (-1,35 p.p.)</title></circle>
+<line x1="804.1" x2="794.0" y1="496.0" y2="496.0" class="elo2 N"/>
+<circle cx="804.1" cy="496.0" r="4" class="p1"><title>Rondônia · 1º turno: 1,32%</title></circle>
+<circle cx="794.0" cy="496.0" r="4.5" class="p2 N"><title>Rondônia · 2º turno: 1,14% (-0,18 p.p.)</title></circle>
+<line x1="883.0" x2="940.1" y1="516.0" y2="516.0" class="elo2 N"/>
+<circle cx="883.0" cy="516.0" r="4" class="p1"><title>Tocantins · 1º turno: 2,73%</title></circle>
+<circle cx="940.1" cy="516.0" r="4.5" class="p2 N"><title>Tocantins · 2º turno: 3,75% (+1,02 p.p.)</title></circle>
+<line x1="886.7" x2="932.6" y1="536.0" y2="536.0" class="elo2 N"/>
+<circle cx="886.7" cy="536.0" r="4" class="p1"><title>Acre · 1º turno: 2,80%</title></circle>
+<circle cx="932.6" cy="536.0" r="4.5" class="p2 N"><title>Acre · 2º turno: 3,62% (+0,82 p.p.)</title></circle>
+<line x1="815.5" x2="795.3" y1="556.0" y2="556.0" class="elo2 N"/>
+<circle cx="815.5" cy="556.0" r="4" class="p1"><title>Amapá · 1º turno: 1,53%</title></circle>
+<circle cx="795.3" cy="556.0" r="4.5" class="p2 N"><title>Amapá · 2º turno: 1,17% (-0,36 p.p.)</title></circle>
+<line x1="807.3" x2="788.8" y1="576.0" y2="576.0" class="elo2 N"/>
+<circle cx="807.3" cy="576.0" r="4" class="p1"><title>Roraima · 1º turno: 1,38%</title></circle>
+<circle cx="788.8" cy="576.0" r="4.5" class="p2 N"><title>Roraima · 2º turno: 1,05% (-0,33 p.p.)</title></circle>
+<text x="34" y="60.0" class="uf" text-anchor="end">SP</text><text x="82" y="60.0" class="peso" text-anchor="end">21,5%</text>
+<text x="34" y="80.0" class="uf" text-anchor="end">MG</text><text x="82" y="80.0" class="peso" text-anchor="end">10,3%</text>
+<text x="34" y="100.0" class="uf" text-anchor="end">RJ</text><text x="82" y="100.0" class="peso" text-anchor="end">8,1%</text>
+<text x="34" y="120.0" class="uf" text-anchor="end">BA</text><text x="82" y="120.0" class="peso" text-anchor="end">7,1%</text>
+<text x="34" y="140.0" class="uf" text-anchor="end">PR</text><text x="82" y="140.0" class="peso" text-anchor="end">5,4%</text>
+<text x="34" y="160.0" class="uf" text-anchor="end">RS</text><text x="82" y="160.0" class="peso" text-anchor="end">5,4%</text>
+<text x="34" y="180.0" class="uf" text-anchor="end">PE</text><text x="82" y="180.0" class="peso" text-anchor="end">4,6%</text>
+<text x="34" y="200.0" class="uf" text-anchor="end">CE</text><text x="82" y="200.0" class="peso" text-anchor="end">4,4%</text>
+<text x="34" y="220.0" class="uf" text-anchor="end">PA</text><text x="82" y="220.0" class="peso" text-anchor="end">3,9%</text>
+<text x="34" y="240.0" class="uf" text-anchor="end">SC</text><text x="82" y="240.0" class="peso" text-anchor="end">3,6%</text>
+<text x="34" y="260.0" class="uf" text-anchor="end">MA</text><text x="82" y="260.0" class="peso" text-anchor="end">3,3%</text>
+<text x="34" y="280.0" class="uf" text-anchor="end">GO</text><text x="82" y="280.0" class="peso" text-anchor="end">3,2%</text>
+<text x="34" y="300.0" class="uf" text-anchor="end">PB</text><text x="82" y="300.0" class="peso" text-anchor="end">2,0%</text>
+<text x="34" y="320.0" class="uf" text-anchor="end">ES</text><text x="82" y="320.0" class="peso" text-anchor="end">1,9%</text>
+<text x="34" y="340.0" class="uf" text-anchor="end">AM</text><text x="82" y="340.0" class="peso" text-anchor="end">1,8%</text>
+<text x="34" y="360.0" class="uf" text-anchor="end">PI</text><text x="82" y="360.0" class="peso" text-anchor="end">1,7%</text>
+<text x="34" y="380.0" class="uf" text-anchor="end">RN</text><text x="82" y="380.0" class="peso" text-anchor="end">1,7%</text>
+<text x="34" y="400.0" class="uf" text-anchor="end">MT</text><text x="82" y="400.0" class="peso" text-anchor="end">1,7%</text>
+<text x="34" y="420.0" class="uf" text-anchor="end">AL</text><text x="82" y="420.0" class="peso" text-anchor="end">1,5%</text>
+<text x="34" y="440.0" class="uf" text-anchor="end">DF</text><text x="82" y="440.0" class="peso" text-anchor="end">1,4%</text>
+<text x="34" y="460.0" class="uf" text-anchor="end">MS</text><text x="82" y="460.0" class="peso" text-anchor="end">1,3%</text>
+<text x="34" y="480.0" class="uf" text-anchor="end">SE</text><text x="82" y="480.0" class="peso" text-anchor="end">1,1%</text>
+<text x="34" y="500.0" class="uf" text-anchor="end">RO</text><text x="82" y="500.0" class="peso" text-anchor="end">0,8%</text>
+<text x="34" y="520.0" class="uf" text-anchor="end">TO</text><text x="82" y="520.0" class="peso" text-anchor="end">0,7%</text>
+<text x="34" y="540.0" class="uf" text-anchor="end">AC</text><text x="82" y="540.0" class="peso" text-anchor="end">0,4%</text>
+<text x="34" y="560.0" class="uf" text-anchor="end">AP</text><text x="82" y="560.0" class="peso" text-anchor="end">0,4%</text>
+<text x="34" y="580.0" class="uf" text-anchor="end">RR</text><text x="82" y="580.0" class="peso" text-anchor="end">0,3%</text>
+<text x="82" y="38" class="eixo" text-anchor="end">eleitorado</text>
+</svg>
+  <div class="legenda"><span><i style="background:var(--papel);border:1.6px solid var(--suave)"></i>1º turno</span><span><i class="dA"></i>2º turno, abstenção</span><span><i class="dB"></i>2º turno, brancos</span><span><i class="dN"></i>2º turno, nulos</span></div>
+  <div class="tabela" style="margin-top:14px"><table class="ordena">
+    <thead>
+      <tr class="grupo"><th></th><th></th><th colspan="3" style="color:var(--A)">Abstenção (% do eleitorado)</th><th colspan="3" style="color:var(--B)">Brancos (% dos comparecidos)</th><th colspan="3" style="color:var(--N)">Nulos (% dos comparecidos)</th></tr>
+      <tr><th style="text-align:left">Estado</th><th>Eleitorado</th><th>1º</th><th>2º</th><th>Δ p.p.</th><th>1º</th><th>2º</th><th>Δ p.p.</th><th>1º</th><th>2º</th><th>Δ p.p.</th></tr>
+    </thead>
+    <tbody><tr><th scope="row"><b>SP</b> <span>São Paulo</span></th><td data-v="34104226.0000">34.104.226</td><td data-v="22.4964">22,5%</td><td data-v="19.7625">19,8%</td><td data-v="-2.7340"><b>-2,7</b></td><td data-v="2.3941">2,39%</td><td data-v="1.4238">1,42%</td><td data-v="-0.9703"><b>-0,97</b></td><td data-v="3.4613">3,46%</td><td data-v="2.6177">2,62%</td><td data-v="-0.8435"><b>-0,84</b></td></tr><tr><th scope="row"><b>MG</b> <span>Minas Gerais</span></th><td data-v="16377659.0000">16.377.659</td><td data-v="22.8383">22,8%</td><td data-v="20.3537">20,4%</td><td data-v="-2.4847"><b>-2,5</b></td><td data-v="2.1231">2,12%</td><td data-v="1.2583">1,26%</td><td data-v="-0.8648"><b>-0,86</b></td><td data-v="3.1033">3,10%</td><td data-v="2.2016">2,20%</td><td data-v="-0.9018"><b>-0,90</b></td></tr><tr><th scope="row"><b>RJ</b> <span>Rio de Janeiro</span></th><td data-v="12857000.0000">12.857.000</td><td data-v="23.3118">23,3%</td><td data-v="21.6190">21,6%</td><td data-v="-1.6928"><b>-1,7</b></td><td data-v="2.0485">2,05%</td><td data-v="1.1082">1,11%</td><td data-v="-0.9403"><b>-0,94</b></td><td data-v="2.9183">2,92%</td><td data-v="2.2956">2,30%</td><td data-v="-0.6226"><b>-0,62</b></td></tr><tr><th scope="row"><b>BA</b> <span>Bahia</span></th><td data-v="11321005.0000">11.321.005</td><td data-v="20.0283">20,0%</td><td data-v="16.7738">16,8%</td><td data-v="-3.2545"><b>-3,3</b></td><td data-v="1.7113">1,71%</td><td data-v="0.9841">0,98%</td><td data-v="-0.7272"><b>-0,73</b></td><td data-v="3.7347">3,73%</td><td data-v="2.4974">2,50%</td><td data-v="-1.2373"><b>-1,24</b></td></tr><tr><th scope="row"><b>PR</b> <span>Paraná</span></th><td data-v="8609026.0000">8.609.026</td><td data-v="20.5316">20,5%</td><td data-v="18.0007">18,0%</td><td data-v="-2.5309"><b>-2,5</b></td><td data-v="1.7905">1,79%</td><td data-v="1.1697">1,17%</td><td data-v="-0.6209"><b>-0,62</b></td><td data-v="1.9506">1,95%</td><td data-v="1.6831">1,68%</td><td data-v="-0.2674"><b>-0,27</b></td></tr><tr><th scope="row"><b>RS</b> <span>Rio Grande do Sul</span></th><td data-v="8526233.0000">8.526.233</td><td data-v="21.3849">21,4%</td><td data-v="19.1948">19,2%</td><td data-v="-2.1901"><b>-2,2</b></td><td data-v="2.2131">2,21%</td><td data-v="1.2985">1,30%</td><td data-v="-0.9145"><b>-0,91</b></td><td data-v="1.9583">1,96%</td><td data-v="1.4695">1,47%</td><td data-v="-0.4888"><b>-0,49</b></td></tr><tr><th scope="row"><b>PE</b> <span>Pernambuco</span></th><td data-v="7225744.0000">7.225.744</td><td data-v="18.1944">18,2%</td><td data-v="15.2133">15,2%</td><td data-v="-2.9811"><b>-3,0</b></td><td data-v="1.8523">1,85%</td><td data-v="0.9264">0,93%</td><td data-v="-0.9259"><b>-0,93</b></td><td data-v="3.3905">3,39%</td><td data-v="1.9529">1,95%</td><td data-v="-1.4377"><b>-1,44</b></td></tr><tr><th scope="row"><b>CE</b> <span>Ceará</span></th><td data-v="6998494.0000">6.998.494</td><td data-v="15.5465">15,5%</td><td data-v="13.9123">13,9%</td><td data-v="-1.6342"><b>-1,6</b></td><td data-v="1.7477">1,75%</td><td data-v="0.9359">0,94%</td><td data-v="-0.8118"><b>-0,81</b></td><td data-v="3.2008">3,20%</td><td data-v="1.8732">1,87%</td><td data-v="-1.3277"><b>-1,33</b></td></tr><tr><th scope="row"><b>PA</b> <span>Pará</span></th><td data-v="6265355.0000">6.265.355</td><td data-v="19.1346">19,1%</td><td data-v="20.3625">20,4%</td><td data-v="1.2279"><b>+1,2</b></td><td data-v="1.0698">1,07%</td><td data-v="0.7315">0,73%</td><td data-v="-0.3383"><b>-0,34</b></td><td data-v="2.9398">2,94%</td><td data-v="1.2563">1,26%</td><td data-v="-1.6835"><b>-1,68</b></td></tr><tr><th scope="row"><b>SC</b> <span>Santa Catarina</span></th><td data-v="5725753.0000">5.725.753</td><td data-v="18.8201">18,8%</td><td data-v="16.8266">16,8%</td><td data-v="-1.9935"><b>-2,0</b></td><td data-v="1.4846">1,48%</td><td data-v="1.0221">1,02%</td><td data-v="-0.4625"><b>-0,46</b></td><td data-v="1.6796">1,68%</td><td data-v="1.5800">1,58%</td><td data-v="-0.0996"><b>-0,10</b></td></tr><tr><th scope="row"><b>MA</b> <span>Maranhão</span></th><td data-v="5186562.0000">5.186.562</td><td data-v="19.7861">19,8%</td><td data-v="20.4141">20,4%</td><td data-v="0.6280"><b>+0,6</b></td><td data-v="1.1132">1,11%</td><td data-v="0.7475">0,75%</td><td data-v="-0.3658"><b>-0,37</b></td><td data-v="2.4816">2,48%</td><td data-v="1.4224">1,42%</td><td data-v="-1.0592"><b>-1,06</b></td></tr><tr><th scope="row"><b>GO</b> <span>Goiás</span></th><td data-v="5080755.0000">5.080.755</td><td data-v="21.8308">21,8%</td><td data-v="20.3410">20,3%</td><td data-v="-1.4898"><b>-1,5</b></td><td data-v="1.1492">1,15%</td><td data-v="1.0677">1,07%</td><td data-v="-0.0815"><b>-0,08</b></td><td data-v="2.4679">2,47%</td><td data-v="1.8081">1,81%</td><td data-v="-0.6598"><b>-0,66</b></td></tr><tr><th scope="row"><b>PB</b> <span>Paraíba</span></th><td data-v="3247397.0000">3.247.397</td><td data-v="17.3496">17,3%</td><td data-v="15.5151">15,5%</td><td data-v="-1.8345"><b>-1,8</b></td><td data-v="1.9485">1,95%</td><td data-v="0.9456">0,95%</td><td data-v="-1.0029"><b>-1,00</b></td><td data-v="4.3910">4,39%</td><td data-v="2.1267">2,13%</td><td data-v="-2.2643"><b>-2,26</b></td></tr><tr><th scope="row"><b>ES</b> <span>Espírito Santo</span></th><td data-v="2990490.0000">2.990.490</td><td data-v="21.3413">21,3%</td><td data-v="19.4375">19,4%</td><td data-v="-1.9038"><b>-1,9</b></td><td data-v="1.8370">1,84%</td><td data-v="1.3731">1,37%</td><td data-v="-0.4639"><b>-0,46</b></td><td data-v="2.4602">2,46%</td><td data-v="3.3067">3,31%</td><td data-v="0.8464"><b>+0,85</b></td></tr><tr><th scope="row"><b>AM</b> <span>Amazonas</span></th><td data-v="2801182.0000">2.801.182</td><td data-v="20.2284">20,2%</td><td data-v="21.7452">21,7%</td><td data-v="1.5169"><b>+1,5</b></td><td data-v="1.0920">1,09%</td><td data-v="0.8359">0,84%</td><td data-v="-0.2561"><b>-0,26</b></td><td data-v="1.7588">1,76%</td><td data-v="2.4045">2,40%</td><td data-v="0.6456"><b>+0,65</b></td></tr><tr><th scope="row"><b>PI</b> <span>Piauí</span></th><td data-v="2708160.0000">2.708.160</td><td data-v="17.2544">17,3%</td><td data-v="17.2933">17,3%</td><td data-v="0.0389"><b>0,0</b></td><td data-v="1.2642">1,26%</td><td data-v="0.7205">0,72%</td><td data-v="-0.5437"><b>-0,54</b></td><td data-v="2.9501">2,95%</td><td data-v="1.9575">1,96%</td><td data-v="-0.9926"><b>-0,99</b></td></tr><tr><th scope="row"><b>RN</b> <span>Rio Grande do Norte</span></th><td data-v="2660565.0000">2.660.565</td><td data-v="18.4003">18,4%</td><td data-v="16.0771">16,1%</td><td data-v="-2.3232"><b>-2,3</b></td><td data-v="1.5280">1,53%</td><td data-v="0.8930">0,89%</td><td data-v="-0.6350"><b>-0,63</b></td><td data-v="3.0345">3,03%</td><td data-v="2.7713">2,77%</td><td data-v="-0.2632"><b>-0,26</b></td></tr><tr><th scope="row"><b>MT</b> <span>Mato Grosso</span></th><td data-v="2638230.0000">2.638.230</td><td data-v="22.2155">22,2%</td><td data-v="20.9571">21,0%</td><td data-v="-1.2585"><b>-1,3</b></td><td data-v="1.0114">1,01%</td><td data-v="0.7400">0,74%</td><td data-v="-0.2715"><b>-0,27</b></td><td data-v="1.8514">1,85%</td><td data-v="1.1814">1,18%</td><td data-v="-0.6700"><b>-0,67</b></td></tr><tr><th scope="row"><b>AL</b> <span>Alagoas</span></th><td data-v="2441794.0000">2.441.794</td><td data-v="20.6146">20,6%</td><td data-v="20.0738">20,1%</td><td data-v="-0.5407"><b>-0,5</b></td><td data-v="1.7391">1,74%</td><td data-v="0.8702">0,87%</td><td data-v="-0.8689"><b>-0,87</b></td><td data-v="4.4256">4,43%</td><td data-v="1.9413">1,94%</td><td data-v="-2.4842"><b>-2,48</b></td></tr><tr><th scope="row"><b>DF</b> <span>Distrito Federal</span></th><td data-v="2253132.0000">2.253.132</td><td data-v="18.7178">18,7%</td><td data-v="17.0808">17,1%</td><td data-v="-1.6370"><b>-1,6</b></td><td data-v="1.3848">1,38%</td><td data-v="1.1982">1,20%</td><td data-v="-0.1866"><b>-0,19</b></td><td data-v="1.8111">1,81%</td><td data-v="2.2014">2,20%</td><td data-v="0.3903"><b>+0,39</b></td></tr><tr><th scope="row"><b>MS</b> <span>Mato Grosso do Sul</span></th><td data-v="2024884.0000">2.024.884</td><td data-v="23.8860">23,9%</td><td data-v="21.2567">21,3%</td><td data-v="-2.6293"><b>-2,6</b></td><td data-v="1.3801">1,38%</td><td data-v="0.9381">0,94%</td><td data-v="-0.4420"><b>-0,44</b></td><td data-v="1.9203">1,92%</td><td data-v="1.4197">1,42%</td><td data-v="-0.5006"><b>-0,50</b></td></tr><tr><th scope="row"><b>SE</b> <span>Sergipe</span></th><td data-v="1740124.0000">1.740.124</td><td data-v="17.3000">17,3%</td><td data-v="15.7153">15,7%</td><td data-v="-1.5848"><b>-1,6</b></td><td data-v="1.7274">1,73%</td><td data-v="0.8956">0,90%</td><td data-v="-0.8318"><b>-0,83</b></td><td data-v="3.4724">3,47%</td><td data-v="2.1224">2,12%</td><td data-v="-1.3499"><b>-1,35</b></td></tr><tr><th scope="row"><b>RO</b> <span>Rondônia</span></th><td data-v="1267105.0000">1.267.105</td><td data-v="21.7839">21,8%</td><td data-v="21.9884">22,0%</td><td data-v="0.2045"><b>+0,2</b></td><td data-v="0.9935">0,99%</td><td data-v="0.8458">0,85%</td><td data-v="-0.1476"><b>-0,15</b></td><td data-v="1.3227">1,32%</td><td data-v="1.1432">1,14%</td><td data-v="-0.1795"><b>-0,18</b></td></tr><tr><th scope="row"><b>TO</b> <span>Tocantins</span></th><td data-v="1182307.0000">1.182.307</td><td data-v="18.3633">18,4%</td><td data-v="19.2458">19,2%</td><td data-v="0.8824"><b>+0,9</b></td><td data-v="0.8645">0,86%</td><td data-v="0.8441">0,84%</td><td data-v="-0.0204"><b>-0,02</b></td><td data-v="2.7328">2,73%</td><td data-v="3.7523">3,75%</td><td data-v="1.0195"><b>+1,02</b></td></tr><tr><th scope="row"><b>AC</b> <span>Acre</span></th><td data-v="614375.0000">614.375</td><td data-v="20.5160">20,5%</td><td data-v="26.1601">26,2%</td><td data-v="5.6441"><b>+5,6</b></td><td data-v="1.1425">1,14%</td><td data-v="1.1057">1,11%</td><td data-v="-0.0368"><b>-0,04</b></td><td data-v="2.7977">2,80%</td><td data-v="3.6173">3,62%</td><td data-v="0.8196"><b>+0,82</b></td></tr><tr><th scope="row"><b>AP</b> <span>Amapá</span></th><td data-v="577534.0000">577.534</td><td data-v="17.4833">17,5%</td><td data-v="25.5498">25,5%</td><td data-v="8.0665"><b>+8,1</b></td><td data-v="0.9264">0,93%</td><td data-v="0.7721">0,77%</td><td data-v="-0.1543"><b>-0,15</b></td><td data-v="1.5259">1,53%</td><td data-v="1.1659">1,17%</td><td data-v="-0.3600"><b>-0,36</b></td></tr><tr><th scope="row"><b>RR</b> <span>Roraima</span></th><td data-v="401496.0000">401.496</td><td data-v="17.1170">17,1%</td><td data-v="23.1382">23,1%</td><td data-v="6.0212"><b>+6,0</b></td><td data-v="0.7867">0,79%</td><td data-v="0.7051">0,71%</td><td data-v="-0.0816"><b>-0,08</b></td><td data-v="1.3808">1,38%</td><td data-v="1.0502">1,05%</td><td data-v="-0.3306"><b>-0,33</b></td></tr><tr><th scope="row"><b>ZZ</b> <span>Exterior</span></th><td data-v="918876.0000">918.876</td><td data-v="62.8061">62,8%</td><td data-v="58.4881">58,5%</td><td data-v="-4.3180"><b>-4,3</b></td><td data-v="1.7017">1,70%</td><td data-v="1.2256">1,23%</td><td data-v="-0.4761"><b>-0,48</b></td><td data-v="1.4469">1,45%</td><td data-v="1.3415">1,34%</td><td data-v="-0.1054"><b>-0,11</b></td></tr></tbody>
+    <tfoot><tr class="total"><th scope="row"><b>Brasil</b> <span>com exterior</span></th><td>158.745.463</td><td>21,1%</td><td>19,2%</td><td>-1,9</td><td>1,84%</td><td>1,12%</td><td>-0,72</td><td>2,93%</td><td>2,12%</td><td>-0,81</td></tr></tfoot>
+  </table></div>
+</section>
+
+<section>
   <h2>Tabela completa</h2>
   <p class="leg">Clique no título de uma coluna para ordenar. “Ganho por 100 eleitores” é o aumento de votos dividido pelo eleitorado do estado, em pontos percentuais, e permite comparar estados de tamanhos diferentes.</p>
-  <div class="tabela"><table id="tab">
+  <div class="tabela"><table class="ordena">
     <thead>
       <tr class="grupo"><th></th><th colspan="2"></th><th colspan="3" class="L">Lula</th><th colspan="3" class="F">Flávio Bolsonaro</th></tr>
       <tr><th style="text-align:left">Estado</th><th>Eleitorado</th><th>% do país</th><th>Taxa</th><th>Ganho/100 el.</th><th>Contrib. p.p.</th><th>Taxa</th><th>Ganho/100 el.</th><th>Contrib. p.p.</th></tr>
@@ -474,13 +805,14 @@ footer { color: var(--suave); font-size: 12px; }
 <section class="notas">
   <div><h3>Média simples ou ponderada</h3><p>A média simples dos 27 estados trata o Amapá como se valesse o mesmo que São Paulo. A taxa ponderada pelo eleitorado dá a cada estado o seu peso real. A taxa nacional pesa os estados pelos votos que o candidato já tinha no 1º turno.</p></div>
   <div><h3>Por que três medidas</h3><p>A taxa mostra a velocidade de crescimento do candidato no estado. O ganho por 100 eleitores compara estados de tamanhos diferentes. A contribuição mostra quanto cada estado explica do crescimento nacional.</p></div>
-  <div><h3>Dados</h3><p>Votos: votação por seção do TSE. Eleitorado: perfil do eleitorado 2026 do TSE (arquivo gerado em 14/07/2026), somando todas as faixas por UF. O exterior entra com 918.876 eleitores aptos e comparecimento baixo.</p></div>
+  <div><h3>Dados</h3><p>Votos, brancos e nulos: votação por seção do TSE. Eleitorado: perfil do eleitorado 2026 do TSE (arquivo gerado em 14/07/2026). A abstenção é o eleitorado menos os votos computados, então pode diferir um pouco do número oficial do TSE, que usa os aptos de cada urna. O exterior entra com 918.876 eleitores aptos.</p></div>
 </section>
 <footer>Fonte: dados abertos do TSE. Base local em <code>tse-eleicoes-2026/</code>.</footer>
 </main>
 <script>
 (function () {
-  var tab = document.getElementById("tab"), corpo = tab.tBodies[0], ths = tab.tHead.rows[1].cells, dir = {};
+  Array.prototype.forEach.call(document.querySelectorAll("table.ordena"), function (tab) {
+  var corpo = tab.tBodies[0], ths = tab.tHead.rows[1].cells, dir = {};
   function ordenar(i) {
     var linhas = Array.prototype.slice.call(corpo.rows);
     dir[i] = !dir[i];
@@ -494,6 +826,7 @@ footer { color: var(--suave); font-size: 12px; }
     linhas.forEach(function (l) { corpo.appendChild(l); });
   }
   Array.prototype.forEach.call(ths, function (th, i) { th.addEventListener("click", function () { ordenar(i); }); });
+  });
 })();
 </script>
 </body>
