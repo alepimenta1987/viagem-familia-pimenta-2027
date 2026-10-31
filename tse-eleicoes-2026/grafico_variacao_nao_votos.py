@@ -19,6 +19,7 @@ def mi(x): return f"{x/1e6:.2f}".replace(".", ",")
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("serie"); ap.add_argument("saida"); ap.add_argument("--desde", type=int, default=2016)
+    ap.add_argument("--detalhado", action="store_true", help="mostra também abstenção, brancos e nulos separados")
     a = ap.parse_args()
     h = {}
     with open(a.serie, newline="") as f:
@@ -32,8 +33,10 @@ def main():
         return 100 * n / ap_, n
 
     PAIN = [("nv", "Abstenção + brancos + nulos", "X", 0, 32, 8), ("ab", "Abstenção", "A", 0, 25, 5), ("br", "Brancos", "B", 0, 3, 1), ("nu", "Nulos", "N", 0, 6, 2)]
+    if not a.detalhado:
+        PAIN = PAIN[:1]
     W, H, mt, mb = 1000, 330, 56, 40
-    pw, gap, x0 = 192, 52, 40
+    pw, gap, x0 = (192, 52, 40) if a.detalhado else (700, 0, 150)
     s = [f'<svg viewBox="0 0 {W} {H}" role="img" aria-label="Variação de abstenção, brancos e nulos do 1º para o 2º turno em cada eleição presidencial">']
     for k, (key, titulo, cls, lo, hi, tk) in enumerate(PAIN):
         px = x0 + k * (pw + gap)
@@ -59,7 +62,7 @@ def main():
     for y in anos:
         for k, nome, _, _, _, _ in PAIN:
             (v1, n1), (v2, n2) = val(y, 1, k), val(y, 2, k)
-            linhas += (f'<tr><td>{y}</td><td>{nome}</td><td>{mi(n1)} mi</td><td>{mi(n2)} mi</td><td>{p(v1,2)}%</td><td>{p(v2,2)}%</td>'
+            linhas += (f'<tr class="{"alt" if anos.index(y) % 2 == 0 else ""}"><td>{y}</td><td>{nome}</td><td>{mi(n1)} mi</td><td>{mi(n2)} mi</td><td>{p(v1,2)}%</td><td>{p(v2,2)}%</td>'
                        f'<td class="{"neg" if v2<v1 else "pos"}"><b>{p(v2-v1,2,True)} p.p.</b></td><td class="{"neg" if v2<v1 else "pos"}">{p(100*(v2/v1-1),1,True)}%</td></tr>')
 
     html = f'''<!doctype html>
@@ -67,7 +70,7 @@ def main():
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Variação de abstenções, brancos e nulos — Presidente {anos[0]}–{anos[-1]}</title>
+<title>Abstenção, brancos e nulos juntos — Presidente {anos[0]}–{anos[-1]}</title>
 <style>
 /* Layout: gráfico de colunas pareadas (1º e 2º turno) em quatro painéis, tabela com os valores embaixo. */
 :root {{ --bg:#eef1f5; --papel:#fff; --tinta:#16202e; --suave:#5a6677; --linha:#d9dfe8; --faixa:#f6f8fb;
@@ -92,13 +95,13 @@ svg .delta {{ font-size:12px; font-weight:700; font-variant-numeric:tabular-nums
 .leg2 i {{ display:inline-block; width:12px; height:12px; border-radius:2px; background:var(--tinta); }} .leg2 i.c1 {{ opacity:.38; }}
 .tab {{ overflow-x:auto; }} table {{ width:100%; border-collapse:collapse; font-size:12.5px; font-variant-numeric:tabular-nums; }}
 th,td {{ padding:4px 8px; text-align:right; border-bottom:1px solid var(--linha); white-space:nowrap; }} th:nth-child(2),td:nth-child(2) {{ text-align:left; }} th:first-child,td:first-child {{ text-align:left; font-weight:600; }}
-thead th {{ font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--suave); font-weight:600; }} tbody tr:nth-child(8n+1) td, tbody tr:nth-child(8n+2) td,tbody tr:nth-child(8n+3) td,tbody tr:nth-child(8n+4) td {{ background:var(--faixa); }}
+thead th {{ font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--suave); font-weight:600; }} tbody tr.alt td {{ background:var(--faixa); }}
 td.neg {{ color:var(--neg); }} td.pos {{ color:var(--pos); }}
 </style>
 </head>
 <body>
 <main>
-  <div class="cab"><h1>Abstenções, brancos e nulos: variação do 1º para o 2º turno</h1>
+  <div class="cab"><h1>Abstenção, brancos e nulos juntos: variação do 1º para o 2º turno</h1>
   <div class="sub">Eleições presidenciais {", ".join(str(y) for y in anos)} · % dos eleitores aptos · dados abertos do TSE</div></div>
   <div class="graf">{svg}</div>
   <div class="leg2"><span><i class="c1"></i>1º turno</span><span><i></i>2º turno</span><span style="color:var(--neg)">&#9632; redução entre os turnos</span><span style="color:var(--pos)">&#9632; aumento entre os turnos</span></div>
