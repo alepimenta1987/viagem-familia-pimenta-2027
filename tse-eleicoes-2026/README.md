@@ -71,6 +71,9 @@ WHERE v.hora + f.offset_h >= 17
 GROUP BY v.turno;
 ```
 
+`serie_historica.py` monta a série de abstenções, brancos e nulos nas presidenciais (2002-2026, só eleições com 2º turno)
+a partir do detalhe da votação do TSE; o resultado fica em `serie_historica.csv`.
+
 `modelo_transferencias.py` estima, por inferência ecológica (regressão restrita por UF, com bootstrap),
 de onde vieram os votos adicionais de cada finalista no 2º turno (requer numpy e o perfil do eleitorado
 `perfil_eleitorado_2026.zip` do TSE). É uma estimativa sobre dados agregados, não o voto individual.

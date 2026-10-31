@@ -61,7 +61,8 @@ svg .val { font-size: 12.5px; font-weight: 700; fill: var(--tinta); font-variant
 svg .val2 { font-size: 10.5px; font-weight: 700; font-variant-numeric: tabular-nums; } svg .val2.L { fill: var(--L); } svg .val2.F { fill: var(--F); }
 .ptit { font-size: 13px; font-weight: 700; fill: var(--tinta); }
 .elo2 { stroke-width: 3; stroke-linecap: round; opacity: .5; } .elo2.A { stroke: var(--A); } .elo2.B { stroke: var(--B); } .elo2.N { stroke: var(--N); }
-.p1 { fill: var(--papel); stroke: var(--suave); stroke-width: 1.6; } .p2.A { fill: var(--A); } .p2.B { fill: var(--B); } .p2.N { fill: var(--N); }
+.p1 { fill: var(--papel); stroke: var(--suave); stroke-width: 1.6; } .elo2.R { stroke: var(--B); } .elo2.U { stroke: var(--A); } .p2.R { fill: var(--B); } .p2.U { fill: var(--A); } svg .val.neg { fill: var(--B); } svg .val.pos { fill: var(--A); }
+.p2.A { fill: var(--A); } .p2.B { fill: var(--B); } .p2.N { fill: var(--N); }
 .perde { fill: var(--perde); } .rot-perde { font-size: 11.5px; fill: var(--perde-tx); font-weight: 600; }
 .apos { fill: var(--apos); } .rot-apos { font-size: 11.5px; fill: var(--apos-tx); font-weight: 600; }
 .linha { fill: none; stroke-width: 2.5; stroke-linejoin: round; } .linha.t1 { stroke: var(--R1); stroke-dasharray: 6 4; } .linha.t2 { stroke: var(--R2); }
@@ -83,7 +84,7 @@ i.ln { display: inline-block; width: 26px; height: 0; border-top: 2.5px solid va
   main { max-width: none; gap: 0; }
   .folha { border: 0; border-radius: 0; padding: 0; break-after: page; zoom: .72; }
   .folha:last-child { break-after: auto; }
-  .folha:nth-child(1) { zoom: .73; } .folha:nth-child(2) { zoom: .8; } .folha:nth-child(3) { zoom: .88; }
+  .folha:nth-child(1) { zoom: .73; } .folha:nth-child(2) { zoom: .8; } .folha:nth-child(3) { zoom: .7; }
 }
 </style>
 </head>
@@ -469,7 +470,7 @@ i.ln { display: inline-block; width: 26px; height: 0; border-top: 2.5px solid va
 
 <!-- ============ FOLHA 3 ============ -->
 <article class="folha">
-  <div class="cab"><h2>Participação e horário de votação</h2><div class="pag">3/3</div></div>
+  <div class="cab"><h2>Participação, série histórica e horário de votação</h2><div class="pag">3/3</div></div>
 
   <div class="bloco">
     <h3>Abstenções, brancos e nulos por estado (círculo vazio: 1º turno; cheio: 2º turno)</h3>
@@ -604,6 +605,64 @@ i.ln { display: inline-block; width: 26px; height: 0; border-top: 2.5px solid va
     <p class="leg" style="margin-top:4px">Estados em ordem de tamanho do eleitorado (exterior fora do gráfico, por escala). A abstenção caiu em 18 estados, subiu em 8 e ficou igual em 1. Os brancos caíram em todos os estados.</p>
   </div>
 
+  <div class="bloco">
+    <h3>Série histórica: abstenção + brancos + nulos, em % dos aptos (círculo vazio: 1º turno; cheio: 2º turno)</h3>
+    <div class="duas">
+      <div class="bloco"><svg viewBox="0 0 560 256" role="img" aria-label="Abstenção, brancos e nulos somados, em % dos aptos, no 1º e no 2º turno de cada eleição">
+<line x1="52.0" x2="52.0" y1="10" y2="226" class="grade"/><text x="52.0" y="242" class="eixo" text-anchor="middle">20%</text>
+<line x1="123.6" x2="123.6" y1="10" y2="226" class="grade"/><text x="123.6" y="242" class="eixo" text-anchor="middle">22%</text>
+<line x1="195.2" x2="195.2" y1="10" y2="226" class="grade"/><text x="195.2" y="242" class="eixo" text-anchor="middle">24%</text>
+<line x1="266.8" x2="266.8" y1="10" y2="226" class="grade"/><text x="266.8" y="242" class="eixo" text-anchor="middle">26%</text>
+<line x1="338.4" x2="338.4" y1="10" y2="226" class="grade"/><text x="338.4" y="242" class="eixo" text-anchor="middle">28%</text>
+<line x1="410.0" x2="410.0" y1="10" y2="226" class="grade"/><text x="410.0" y="242" class="eixo" text-anchor="middle">30%</text>
+<text x="42" y="35.0" class="uf" text-anchor="end">2002</text>
+<line x1="277.1" x2="239.6" y1="31.0" y2="31.0" class="elo2 R"/>
+<circle cx="277.1" cy="31.0" r="4.5" class="p1"><title>2002, 1º turno: 26,29%</title></circle>
+<circle cx="239.6" cy="31.0" r="5" class="p2 R"><title>2002, 2º turno: 25,24%</title></circle>
+<text x="424" y="35.0" class="val neg">-1,05 p.p. (-4,0%)</text>
+<text x="42" y="65.0" class="uf" text-anchor="end">2006</text>
+<line x1="186.6" x2="191.1" y1="61.0" y2="61.0" class="elo2 U"/>
+<circle cx="186.6" cy="61.0" r="4.5" class="p1"><title>2006, 1º turno: 23,76%</title></circle>
+<circle cx="191.1" cy="61.0" r="5" class="p2 U"><title>2006, 2º turno: 23,89%</title></circle>
+<text x="424" y="65.0" class="val pos">+0,13 p.p. (+0,5%)</text>
+<text x="42" y="95.0" class="uf" text-anchor="end">2010</text>
+<line x1="237.9" x2="294.0" y1="91.0" y2="91.0" class="elo2 U"/>
+<circle cx="237.9" cy="91.0" r="4.5" class="p1"><title>2010, 1º turno: 25,19%</title></circle>
+<circle cx="294.0" cy="91.0" r="5" class="p2 U"><title>2010, 2º turno: 26,76%</title></circle>
+<text x="424" y="95.0" class="val pos">+1,56 p.p. (+6,2%)</text>
+<text x="42" y="125.0" class="uf" text-anchor="end">2014</text>
+<line x1="308.5" x2="270.4" y1="121.0" y2="121.0" class="elo2 R"/>
+<circle cx="308.5" cy="121.0" r="4.5" class="p1"><title>2014, 1º turno: 27,16%</title></circle>
+<circle cx="270.4" cy="121.0" r="5" class="p2 R"><title>2014, 2º turno: 26,10%</title></circle>
+<text x="424" y="125.0" class="val neg">-1,06 p.p. (-3,9%)</text>
+<text x="42" y="155.0" class="uf" text-anchor="end">2018</text>
+<line x1="314.3" x2="368.1" y1="151.0" y2="151.0" class="elo2 U"/>
+<circle cx="314.3" cy="151.0" r="4.5" class="p1"><title>2018, 1º turno: 27,33%</title></circle>
+<circle cx="368.1" cy="151.0" r="5" class="p2 U"><title>2018, 2º turno: 28,83%</title></circle>
+<text x="424" y="155.0" class="val pos">+1,50 p.p. (+5,5%)</text>
+<text x="42" y="185.0" class="uf" text-anchor="end">2022</text>
+<line x1="210.6" x2="203.3" y1="181.0" y2="181.0" class="elo2 R"/>
+<circle cx="210.6" cy="181.0" r="4.5" class="p1"><title>2022, 1º turno: 24,43%</title></circle>
+<circle cx="203.3" cy="181.0" r="5" class="p2 R"><title>2022, 2º turno: 24,23%</title></circle>
+<text x="424" y="185.0" class="val neg">-0,21 p.p. (-0,8%)</text>
+<text x="42" y="215.0" class="uf" text-anchor="end">2026</text>
+<line x1="225.4" x2="117.7" y1="211.0" y2="211.0" class="elo2 R"/>
+<circle cx="225.4" cy="211.0" r="4.5" class="p1"><title>2026, 1º turno: 24,84%</title></circle>
+<circle cx="117.7" cy="211.0" r="5" class="p2 R"><title>2026, 2º turno: 21,84%</title></circle>
+<text x="424" y="215.0" class="val neg">-3,01 p.p. (-12,1%)</text>
+<text x="424" y="12" class="eixo">variação</text></svg>
+        <div class="leg2"><span><i class="dot dB"></i>redução</span><span><i class="dot dA"></i>aumento</span></div>
+      </div>
+      <div class="bloco">
+        <div style="overflow-x:auto"><table class="tabelinha">
+          <thead><tr><th>Ano</th><th>1º</th><th>2º</th><th>Δ p.p.</th><th>Δ %</th><th>Abst.</th><th>Bran.</th><th>Nulos</th></tr></thead>
+          <tbody><tr><td>2002</td><td>26,29%</td><td>25,24%</td><td><b>-1,05</b></td><td>-4,0%</td><td>+2,73</td><td>-0,99</td><td>-2,78</td></tr><tr><td>2006</td><td>23,76%</td><td>23,89%</td><td><b>+0,13</b></td><td>+0,5%</td><td>+2,24</td><td>-1,20</td><td>-0,91</td></tr><tr><td>2010</td><td>25,19%</td><td>26,76%</td><td><b>+1,56</b></td><td>+6,2%</td><td>+3,38</td><td>-0,76</td><td>-1,06</td></tr><tr><td>2014</td><td>27,16%</td><td>26,10%</td><td><b>-1,06</b></td><td>-3,9%</td><td>+1,71</td><td>-1,75</td><td>-1,02</td></tr><tr><td>2018</td><td>27,33%</td><td>28,83%</td><td><b>+1,50</b></td><td>+5,5%</td><td>+0,97</td><td>-0,42</td><td>+0,95</td></tr><tr><td>2022</td><td>24,43%</td><td>24,23%</td><td><b>-0,21</b></td><td>-0,8%</td><td>-0,36</td><td>-0,12</td><td>+0,28</td></tr><tr><td>2026</td><td>24,84%</td><td>21,84%</td><td><b>-3,01</b></td><td>-12,1%</td><td>-1,86</td><td>-0,55</td><td>-0,60</td></tr></tbody>
+        </table></div>
+        <p class="leg" style="margin-top:6px">Colunas finais: variação de cada componente em p.p. dos aptos. 2026 teve a maior redução da série (-3,01 p.p., -12,1%). De 2002 a 2022 a média foi +0,1 p.p., sem tendência. Só entram eleições com 2º turno e dados no TSE: 1989 não está nos dados abertos, e 1994 e 1998 foram decididas no 1º turno. Aptos de 2026 vêm do perfil de julho.</p>
+      </div>
+    </div>
+  </div>
+
   <div class="duas">
     <div class="bloco">
       <h3>Quando os eleitores votaram (% dos votos do turno em cada hora, horário de Brasília)</h3>
@@ -676,7 +735,7 @@ i.ln { display: inline-block; width: 26px; height: 0; border-top: 2.5px solid va
   </div>
 
   <div class="notas">
-    <div><h3>Fontes</h3><p>Votação por seção, arquivos de urna (logs) e perfil do eleitorado 2026 do TSE. O horário de cada voto vem do log da urna; o fuso de cada município é detectado pelo horário do primeiro voto (a votação abre às 8h de Brasília).</p></div>
+    <div><h3>Fontes</h3><p>Votação por seção, arquivos de urna (logs) e perfil do eleitorado 2026 do TSE. A série histórica usa o detalhe da votação por zona do TSE (2002–2022). O horário de cada voto vem do log da urna; o fuso de cada município é detectado pelo horário do primeiro voto (a votação abre às 8h de Brasília).</p></div>
     <div><h3>Como foram calculados</h3><p>Crescimento: votos do 2º turno ÷ votos do 1º − 1. Abstenção: eleitorado apto (perfil de 14/07/2026) menos votos computados, então pode diferir um pouco do número oficial. Brancos e nulos: % dos comparecidos.</p></div>
     <div><h3>Conferência e limites</h3><p>Os logs somam 0,15% menos votos que o arquivo oficial no 1º turno e 0,12% no 2º (causa não verificada). Os gráficos de horário usam o log; os demais, o arquivo oficial. O exterior entra nos totais do país e fica fora dos municípios.</p></div>
   </div>
