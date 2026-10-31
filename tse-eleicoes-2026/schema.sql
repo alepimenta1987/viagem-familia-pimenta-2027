@@ -57,9 +57,7 @@ CREATE TABLE IF NOT EXISTS votacao_secao (
     nr_votavel         INTEGER,
     nm_votavel         TEXT,
     qt_votos           INTEGER,
-    qt_aptos           INTEGER,
-    qt_comparecimento  INTEGER,
-    qt_abstencoes      INTEGER
+    nr_local_votacao   INTEGER
 );
 CREATE INDEX IF NOT EXISTS ix_votacao_secao
     ON votacao_secao (turno, uf, cd_municipio, nr_zona, nr_secao);

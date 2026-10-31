@@ -12,8 +12,6 @@ import unittest
 import zipfile
 from pathlib import Path
 
-import py7zr
-
 AQUI = Path(__file__).resolve().parent
 
 
@@ -28,8 +26,8 @@ def logjez(horas_votos, data="04/10/2026"):
         texto += linha_log(data, h, "Eleitor foi habilitado")
         texto += linha_log(data, h, "O voto do eleitor foi computado")
     buf = io.BytesIO()
-    with py7zr.SevenZipFile(buf, "w") as z:
-        z.writestr(texto.encode("latin-1"), "logd.dat")
+    with zipfile.ZipFile(buf, "w") as z:
+        z.writestr("logd.dat", texto.encode("latin-1"))
     return buf.getvalue()
 
 
@@ -43,16 +41,23 @@ class TestPipeline(unittest.TestCase):
             sp = ["08:00:15", "12:00:00", "16:59:59", "17:05:00"]
             for uf, mun, horas in [("AC", "01120", ac), ("SP", "71072", sp)]:
                 with zipfile.ZipFile(tmp / f"bu_imgbu_logjez_rdv_vscmr_2026_1t_{uf}.zip", "w") as zf:
+                    zf.writestr("leiame.pdf", b"ignorar")
                     for secao in range(1, 7):
-                        zf.writestr(f"o00406-{mun}0001{secao:04d}.logjez", logjez(horas))
-                        zf.writestr(f"o00406-{mun}0001{secao:04d}.bu", b"ignorar")
+                        base = f"o03220{uf.lower()}{mun}0001{secao:04d}"
+                        zf.writestr(f"{base}-log.jez", logjez(horas))
+                        zf.writestr(f"{base}-bu.dat", b"ignorar")
+                        zf.writestr(f"{base}-rdv.dat", b"ignorar")
 
-            cab = "NR_TURNO;SG_UF;CD_MUNICIPIO;NM_MUNICIPIO;NR_ZONA;NR_SECAO;CD_CARGO;NR_VOTAVEL;" \
-                  "NM_VOTAVEL;QT_VOTOS;QT_APTOS;QT_COMPARECIMENTO;QT_ABSTENCOES\n"
-            linhas = [f'"1";"AC";"1120";"RIO BRANCO";"1";"{s}";"1";"99";"X";"5";"10";"5";"5"\n'
-                      for s in range(1, 7)]
-            linhas += [f'"1";"SP";"71072";"SAO PAULO";"1";"{s}";"1";"99";"X";"4";"10";"4";"6"\n'
-                       for s in range(1, 7)]
+            cab = ('"NR_TURNO";"SG_UF";"CD_MUNICIPIO";"NM_MUNICIPIO";"NR_ZONA";"NR_SECAO";"CD_CARGO";'
+                   '"NR_VOTAVEL";"NM_VOTAVEL";"QT_VOTOS";"NR_LOCAL_VOTACAO"\n')
+            # votos oficiais por seção: AC 5 (3 + 2), SP 4 (3 + 1)
+            linhas = []
+            for s_ in range(1, 7):
+                linhas += [f'1;"AC";1120;"RIO BRANCO";1;{s_};1;13;"A";3;1\n',
+                           f'1;"AC";1120;"RIO BRANCO";1;{s_};1;95;"Branco";2;1\n',
+                           f'1;"SP";71072;"SAO PAULO";1;{s_};1;13;"A";3;1\n',
+                           f'1;"SP";71072;"SAO PAULO";1;{s_};1;96;"Nulo";1;1\n',
+                           f'1;"SP";71072;"SAO PAULO";1;{s_};6;99;"Outro cargo";9;1\n']
             with zipfile.ZipFile(tmp / "votacao_secao_2026_BR.zip", "w") as zf:
                 zf.writestr("votacao_secao_2026_BR.csv", (cab + "".join(linhas)).encode("latin-1"))
 
@@ -71,7 +76,7 @@ class TestPipeline(unittest.TestCase):
             resumo = (tmp / "res" / "resumo_turno.csv").read_text().splitlines()
             # 6 seções x (5 votos AC + 4 votos SP) = 54; após 17h: 6x2 (AC) + 6x1 (SP) = 18
             self.assertEqual(resumo[1].split(",")[:3], ["1", "54", "18"])
-            conf = (tmp / "res" / "conferencia_comparecimento.csv").read_text().splitlines()
+            conf = (tmp / "res" / "conferencia_votos.csv").read_text().splitlines()
             self.assertEqual(conf[1], "1,12,12,54,54,0")
 
 

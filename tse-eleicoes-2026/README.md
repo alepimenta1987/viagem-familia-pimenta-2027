@@ -7,7 +7,7 @@ depois do encerramento da votação (17h, horário de Brasília).
 ## Como rodar
 
 ```bash
-pip install -r requirements.txt
+# sem dependências externas: só a biblioteca padrão do Python 3.9+
 
 python tse.py logs        # arquivos de urna (logs) de todas as UFs + exterior, 1º e 2º turno
 python tse.py votacao     # votação por seção para Presidente (conferência)

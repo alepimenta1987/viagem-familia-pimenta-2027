@@ -25,9 +25,6 @@ from concurrent.futures import ProcessPoolExecutor
 from datetime import datetime
 from pathlib import Path
 
-import py7zr
-import py7zr.io
-
 ANO = 2026
 DATAS_TURNO = {1: "04/10/2026", 2: "25/10/2026"}
 UFS = ["AC", "AL", "AM", "AP", "BA", "CE", "DF", "ES", "GO", "MA", "MG", "MS", "MT", "PA",
@@ -42,7 +39,8 @@ FECHAMENTO_H = 17  # encerramento, horário de Brasília
 
 AQUI = Path(__file__).resolve().parent
 MSG_VOTO = "O voto do eleitor foi computado"
-RE_SECAO = re.compile(r"-(\d{5})(\d{4})(\d{4})\.logjez$", re.IGNORECASE)
+# o<5 dígitos><UF><município:5><zona:4><seção:4>-log.jez (dentro do zip da UF)
+RE_SECAO = re.compile(r"o\d{5}[a-z]{2}(\d{5})(\d{4})(\d{4})-log\.jez$", re.IGNORECASE)
 
 
 # ---------------------------------------------------------------- download
@@ -65,14 +63,13 @@ def baixar(url, destino, tentativas=5):
                     inicio = 0  # servidor ignorou o Range: recomeça
                 total = int(resp.headers.get("Content-Length", 0)) + inicio
                 with open(parcial, "ab" if inicio else "wb") as f:
-                    baixado = inicio
+                    baixado = ultimo_aviso = inicio
                     while bloco := resp.read(1 << 20):
                         f.write(bloco)
                         baixado += len(bloco)
-                        if total:
-                            print(f"\r  {destino.name}: {baixado / 1e6:,.0f} / {total / 1e6:,.0f} MB",
-                                  end="", flush=True)
-            print()
+                        if total and baixado - ultimo_aviso >= max(total // 10, 50_000_000):
+                            ultimo_aviso = baixado
+                            print(f"  {destino.name}: {baixado / 1e6:,.0f} / {total / 1e6:,.0f} MB", flush=True)
             parcial.rename(destino)
             return destino
         except Exception as e:  # noqa: BLE001 - rede instável: tenta de novo
@@ -85,16 +82,9 @@ def baixar(url, destino, tentativas=5):
 # ---------------------------------------------------------------- logs de urna
 
 def ler_logjez(dados):
-    """Extrai o texto dos logs (.dat) de um arquivo .logjez (formato 7z)."""
-    with py7zr.SevenZipFile(io.BytesIO(dados), "r") as z:
-        fab = py7zr.io.BytesIOFactory(limit=1 << 30)
-        z.extractall(factory=fab)
-    textos = []
-    for nome, prod in fab.products.items():
-        if nome.lower().endswith(".dat"):
-            prod.seek(0)
-            textos.append(prod.read().decode("latin-1"))
-    return textos
+    """Extrai o texto dos logs (.dat) de um arquivo -log.jez (zip com o logd.dat da urna)."""
+    with zipfile.ZipFile(io.BytesIO(dados)) as z:
+        return [z.read(n).decode("latin-1") for n in z.namelist() if n.lower().endswith(".dat")]
 
 
 def contar_votos(textos, data_eleicao):
@@ -131,14 +121,10 @@ def processar_logjez(args):
 
 
 def iterar_logjez(zf):
-    """Percorre os .logjez de um zip (inclusive zips aninhados)."""
+    """Percorre os -log.jez do zip da UF (ignora BU, RDV, imagens e assinaturas)."""
     for info in zf.infolist():
-        nome = info.filename.lower()
-        if nome.endswith(".logjez"):
+        if info.filename.lower().endswith("-log.jez"):
             yield info.filename, zf.read(info)
-        elif nome.endswith(".zip"):
-            with zipfile.ZipFile(io.BytesIO(zf.read(info))) as interno:
-                yield from iterar_logjez(interno)
 
 
 def map_limitado(pool, func, itens, janela=1024):
@@ -180,12 +166,13 @@ def carregar_uf(con, caminho_zip, turno, uf, processos):
             if len(lote) >= 2000:
                 gravar_secoes(con, turno, uf, lote)
                 lote.clear()
-                print(f"\r  {uf} {turno}º turno: {arquivos:,} logs", end="", flush=True)
+                if arquivos % 20_000 < 2000:
+                    print(f"  {uf} {turno}º turno: {arquivos:,} logs", flush=True)
     gravar_secoes(con, turno, uf, lote)
     con.execute("INSERT OR REPLACE INTO carga VALUES (?,?,?,?,?)",
                 (turno, uf, arquivos, erros, datetime.now().isoformat(timespec="seconds")))
     con.commit()
-    print(f"\r  {uf} {turno}º turno: {arquivos:,} logs ({erros} com erro)")
+    print(f"  {uf} {turno}º turno: {arquivos:,} logs ({erros} com erro)", flush=True)
 
 
 def cmd_logs(a):
@@ -206,8 +193,7 @@ def cmd_logs(a):
 # ---------------------------------------------------------------- votação por seção
 
 COLUNAS_VOTACAO = ["NR_TURNO", "SG_UF", "CD_MUNICIPIO", "NM_MUNICIPIO", "NR_ZONA", "NR_SECAO",
-                   "CD_CARGO", "NR_VOTAVEL", "NM_VOTAVEL", "QT_VOTOS", "QT_APTOS",
-                   "QT_COMPARECIMENTO", "QT_ABSTENCOES"]
+                   "CD_CARGO", "NR_VOTAVEL", "NM_VOTAVEL", "QT_VOTOS", "NR_LOCAL_VOTACAO"]
 
 
 def cmd_votacao(a):
@@ -224,17 +210,21 @@ def cmd_votacao(a):
                 leitor = csv.reader(io.TextIOWrapper(bruto, encoding="latin-1", newline=""),
                                     delimiter=";")
                 cabecalho = next(leitor)
-                idx = [cabecalho.index(c) if c in cabecalho else None for c in COLUNAS_VOTACAO]
-                i_cargo = idx[COLUNAS_VOTACAO.index("CD_CARGO")]
+                faltam = [c for c in COLUNAS_VOTACAO if c not in cabecalho]
+                if faltam:
+                    sys.exit(f"{nome}: colunas ausentes {faltam}; cabeçalho: {cabecalho}")
+                idx = [cabecalho.index(c) for c in COLUNAS_VOTACAO]
+                i_cargo = cabecalho.index("CD_CARGO")
+                insert = f"INSERT INTO votacao_secao VALUES ({','.join('?' * len(idx))})"
                 lote = []
                 for linha in leitor:
-                    if i_cargo is not None and linha[i_cargo] != "1":  # 1 = Presidente
+                    if linha[i_cargo] != "1":  # 1 = Presidente
                         continue
-                    lote.append([linha[i] if i is not None else None for i in idx])
+                    lote.append([linha[i] for i in idx])
                     if len(lote) >= 50_000:
-                        con.executemany(f"INSERT INTO votacao_secao VALUES ({','.join('?' * 13)})", lote)
+                        con.executemany(insert, lote)
                         lote.clear()
-                con.executemany(f"INSERT INTO votacao_secao VALUES ({','.join('?' * 13)})", lote)
+                con.executemany(insert, lote)
     con.commit()
     n = con.execute("SELECT COUNT(*) FROM votacao_secao").fetchone()[0]
     print(f"votacao_secao: {n:,} linhas")
@@ -249,30 +239,41 @@ def segundos(hhmmss):
     return h * 3600 + m * 60 + s
 
 
+def percentil(valores, q):
+    v = sorted(valores)
+    return v[min(int(q * len(v)), len(v) - 1)]
+
+
 def detectar_fusos(con):
     """Detecta, por município, a diferença entre o relógio das urnas e Brasília.
 
-    A votação abre às 8h de Brasília; a mediana do horário do primeiro voto das
-    seções de um município fica poucos minutos depois da abertura no relógio
-    local das urnas. Ex.: no Acre a mediana fica perto de 06:0x -> offset +2.
-    Municípios com menos de 5 seções usam a mediana da UF.
+    A votação abre às 8h de Brasília e quase toda seção tem o primeiro eleitor logo
+    depois. Usa-se o percentil 20 do horário do primeiro voto das seções do município
+    (robusto a seções que abriram tarde): no Acre fica perto de 06:0x -> offset +2.
+    Municípios com menos de 3 seções usam o fuso mais comum da UF.
     """
     con.execute("DELETE FROM fuso_municipio")
     linhas = con.execute(
         "SELECT turno, uf, cd_municipio, primeiro_voto FROM secao WHERE primeiro_voto IS NOT NULL")
-    por_mun, por_uf = defaultdict(list), defaultdict(list)
+    por_mun = defaultdict(list)
     for turno, uf, mun, pri in linhas:
-        s = segundos(pri)
-        por_mun[(turno, uf, mun)].append(s)
-        por_uf[(turno, uf)].append(s)
+        por_mun[(turno, uf, mun)].append(segundos(pri))
 
     def offset(amostra):
-        return round((ABERTURA_H * 3600 - statistics.median(amostra)) / 3600)
+        return round((ABERTURA_H * 3600 - percentil(amostra, 0.2)) / 3600)
 
-    off_uf = {k: offset(v) for k, v in por_uf.items()}
+    comum = defaultdict(Counter)  # (turno, uf) -> offset -> nº de seções
+    proprio = {}
+    for (t, uf, mun), v in por_mun.items():
+        if len(v) >= 3:
+            proprio[(t, uf, mun)] = offset(v)
+            comum[(t, uf)][proprio[(t, uf, mun)]] += len(v)
+    todas = defaultdict(list)
+    for (t, uf, _), v in por_mun.items():
+        todas[(t, uf)].extend(v)
+    off_uf = {k: comum[k].most_common(1)[0][0] if comum[k] else offset(v) for k, v in todas.items()}
     con.executemany("INSERT INTO fuso_municipio VALUES (?,?,?,?)", [
-        (t, uf, mun, offset(v) if len(v) >= 5 else off_uf[(t, uf)])
-        for (t, uf, mun), v in por_mun.items()])
+        (t, uf, mun, proprio.get((t, uf, mun), off_uf[(t, uf)])) for (t, uf, mun) in por_mun])
     con.commit()
 
 
@@ -280,17 +281,17 @@ CONSULTAS = {
     "resumo_turno": """
         SELECT v.turno,
                SUM(v.votos)                                                  AS votos_log,
-               SUM(CASE WHEN v.hora + f.offset_h >= :fecha THEN v.votos END) AS votos_apos_17h_brasilia,
-               ROUND(100.0 * SUM(CASE WHEN v.hora + f.offset_h >= :fecha THEN v.votos END)
+               COALESCE(SUM(CASE WHEN v.hora + f.offset_h >= :fecha THEN v.votos END), 0) AS votos_apos_17h_brasilia,
+               ROUND(100.0 * COALESCE(SUM(CASE WHEN v.hora + f.offset_h >= :fecha THEN v.votos END), 0)
                      / SUM(v.votos), 3)                                      AS pct_apos_17h,
-               SUM(CASE WHEN v.hora >= :fecha THEN v.votos END)              AS votos_apos_17h_relogio_local
+               COALESCE(SUM(CASE WHEN v.hora >= :fecha THEN v.votos END), 0)              AS votos_apos_17h_relogio_local
         FROM votos_hora v JOIN fuso_municipio f USING (turno, uf, cd_municipio)
         GROUP BY v.turno ORDER BY v.turno""",
     "por_uf": """
         SELECT v.turno, v.uf, MIN(f.offset_h) AS offset_min_h, MAX(f.offset_h) AS offset_max_h,
                SUM(v.votos) AS votos_log,
-               SUM(CASE WHEN v.hora + f.offset_h >= :fecha THEN v.votos END) AS votos_apos_17h_brasilia,
-               ROUND(100.0 * SUM(CASE WHEN v.hora + f.offset_h >= :fecha THEN v.votos END)
+               COALESCE(SUM(CASE WHEN v.hora + f.offset_h >= :fecha THEN v.votos END), 0) AS votos_apos_17h_brasilia,
+               ROUND(100.0 * COALESCE(SUM(CASE WHEN v.hora + f.offset_h >= :fecha THEN v.votos END), 0)
                      / SUM(v.votos), 3) AS pct_apos_17h
         FROM votos_hora v JOIN fuso_municipio f USING (turno, uf, cd_municipio)
         GROUP BY v.turno, v.uf ORDER BY v.turno, votos_apos_17h_brasilia DESC""",
@@ -319,13 +320,13 @@ CONSULTAS = {
         ORDER BY s.turno, CAST(substr(s.ultimo_voto, 1, 2) AS INTEGER) + f.offset_h DESC,
                  substr(s.ultimo_voto, 3) DESC
         LIMIT 50""",
-    "conferencia_comparecimento": """
+    "conferencia_votos": """
         WITH tse AS (
-            SELECT turno, uf, cd_municipio, nr_zona, nr_secao, MAX(qt_comparecimento) AS comparecimento
+            SELECT turno, uf, cd_municipio, nr_zona, nr_secao, SUM(qt_votos) AS votos
             FROM votacao_secao GROUP BY 1, 2, 3, 4, 5)
-        SELECT s.turno, COUNT(*) AS secoes_log, COUNT(tse.comparecimento) AS secoes_casadas,
-               SUM(s.votos_total) AS votos_log, SUM(tse.comparecimento) AS comparecimento_tse,
-               SUM(CASE WHEN s.votos_total <> tse.comparecimento THEN 1 ELSE 0 END) AS secoes_divergentes
+        SELECT s.turno, COUNT(*) AS secoes_log, COUNT(tse.votos) AS secoes_casadas,
+               SUM(s.votos_total) AS votos_log, SUM(tse.votos) AS votos_oficiais,
+               SUM(CASE WHEN s.votos_total <> tse.votos THEN 1 ELSE 0 END) AS secoes_divergentes
         FROM secao s LEFT JOIN tse USING (turno, uf, cd_municipio, nr_zona, nr_secao)
         GROUP BY s.turno ORDER BY s.turno""",
 }
@@ -356,7 +357,7 @@ def cmd_analisar(a):
                  f"Gerado em {datetime.now():%d/%m/%Y %H:%M} a partir de `{a.banco}`.", ""]
     tem_votacao = con.execute("SELECT 1 FROM votacao_secao LIMIT 1").fetchone()
     for nome, sql in CONSULTAS.items():
-        if nome == "conferencia_comparecimento" and not tem_votacao:
+        if nome == "conferencia_votos" and not tem_votacao:
             continue
         cols, linhas, md = tabela_md(con.execute(sql, {"fecha": FECHAMENTO_H}))
         with open(saida / f"{nome}.csv", "w", newline="", encoding="utf-8") as f:
